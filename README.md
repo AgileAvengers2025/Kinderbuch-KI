@@ -86,6 +86,24 @@ Das Projekt wird mit **Scrum** umgesetzt, um die agile Entwicklung und kontinuie
 - Videofunktion und Vorlesefunktion
 
 ---
+## Nützliche Links
+
+[Google-meet](https://meet.google.com/ioa-dxwc-ukt?authuser=0)
+
+[Figma-project](https://www.figma.com/files/team/1200440433546325999/project/331602336/Kinderbuch-ki?fuid=1200440420227567480)
+
+---
+
+## Termine
+
+Meetings  
+
+&nbsp;&nbsp;&nbsp;&nbsp;Mo, Di, Do 18:00  
+&nbsp;&nbsp;&nbsp;&nbsp;Mi, Fr 14:30
+
+27.02 Präsentation
+
+---
 
 ## Priorisierung (MoSCoW)
 - **Must**:
