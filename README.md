@@ -142,10 +142,10 @@ Meetings
 - Zusätzliche Entwicklungsressourcen für die Videofunktion
 - Einhaltung der DSGVO- und COPPA-Richtlinien
 
----
+--- 
 
 ## Fazit
-**Kinderbuch-KI** bietet eine einzigartige Plattform für Kinder und Eltern, um interaktive Geschichten zu erleben. Durch den Einsatz von KI-Technologie, kindgerechten Illustrationen und innovativen Funktionen wird das gemeinsame Geschichtenerzählen neu definiert.
+**Kinderbuch-KI** bietet eine einzigartige Plattform für Kinder und Eltern, um interaktive Geschichten zu erleben. Durch den  Einsatz von KI-Technologie, kindgerechten Illustrationen und innovativen Funktionen wird das gemeinsame Geschichtenerzählen neu definiert.
 
 **Call-to-Action**: Wir freuen uns über Mitwirkende und Tester, die uns bei der Umsetzung unterstützen! Starten Sie noch heute mit Ihrem ersten Beitrag oder einer Idee!
 
