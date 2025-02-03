@@ -1,7 +1,7 @@
 ## **API Documentation**
 
 ### **Base URL**
-- The base URL for the API is `http://localhost:8082` (or whatever port is set in the `PORT` environment variable).
+- The base URL for the API is `http://localhost:8082`.
 
 ---
 
@@ -13,10 +13,10 @@
 #### **`POST /login`**
 
 ##### **Description:**
-This route is used to log in a user by providing a `username` and `password` (though in this case, the credentials are hardcoded for simplicity). It will return an `accessToken` and store a `refreshToken` in a cookie.
+This route is used to log in to the API. This is necessary to use the restricted Routes. It will return an `accessToken` and store a `refreshToken` in a cookie.
 
 ##### **Request Body:**
-- No body is required. The route is designed with a mock user for demonstration purposes.
+- Currently not required.
   
 ##### **Response:**
 - **Success:**
@@ -119,7 +119,7 @@ Response:
 #### **`GET /`**
 
 ##### **Description:**
-This is a protected route that requires a valid `accessToken` (either via `Authorization` header or cookies) to access. The route sends a personalized message including the user's name.
+This is a protected route to test access. The route sends a personalized message including the user's name.
 
 ##### **Authorization Required:**
 - The request must contain a valid JWT `accessToken` either in the **Authorization header** (`Bearer <token>`) or in the **cookies**.
@@ -154,38 +154,6 @@ Response:
 }
 ```
 
----
-
-### 5. **Users Routes** (`/api/users`)
-#### **`GET /api/users`**
-##### **Description:**
-- **Returns** a list of all users (functionality can be added depending on your app).
-
-#### **`POST /api/users`**
-##### **Description:**
-- **Create a new user** (functionality can be added depending on your app).
-
-#### **`GET /api/users/:id`**
-##### **Description:**
-- **Returns a specific user** based on the `id`.
-
----
-
-### 6. **Stories Routes** (`/api/stories`)
-#### **`GET /api/stories`**
-##### **Description:**
-- **Returns a list of all stories** (functionality can be added depending on your app).
-
-#### **`POST /api/stories`**
-##### **Description:**
-- **Create a new story** (functionality can be added depending on your app).
-
-#### **`GET /api/stories/:id`**
-##### **Description:**
-- **Returns a specific story** based on the `id`.
-
----
-
 ### **Common Headers**
 - **Authorization**: 
   - For accessing protected routes, you can send the JWT token as a Bearer token in the Authorization header.
@@ -208,9 +176,3 @@ Response:
   
 - **403 Forbidden**: 
     - This is returned when the `refreshToken` is invalid or expired during the refresh token flow.
-
----
-
-### **Security Considerations**
-- The `refreshToken` is stored in a **secure HTTP-only cookie**, which ensures that it is not accessible by JavaScript (helps protect against XSS).
-- Ensure that you are using HTTPS in production to prevent tokens from being transmitted over unsecured channels.
