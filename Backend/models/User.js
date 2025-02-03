@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    name: {
+/*     name: {
         type: String,
         default: '',
       },
@@ -48,7 +48,7 @@ const UserSchema = new mongoose.Schema(
         type: String,
         default: 'Deutschland',
       },
-    },
+    }, */
     kidsNames: {
         type: [String],
         default: [],
