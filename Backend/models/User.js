@@ -11,16 +11,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
+      match: [/^\S+@\S+\.\S+$/, 'Bitte eine gültige E-Mail Adresse eingeben.'],
     },
     passwordHash: {
       type: String,
       required: true,
     },
     displayName: {
-        type: String,
-        default: '',
-      },
+      type: String,
+      default: '',
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -29,30 +29,16 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-/*     name: {
-        type: String,
-        default: '',
-      },
-    address: {
-      street: {
-        type: String,
-      },
-      postalCode: {
-        type: String,
-        match: [/^\d{5}$/, 'Bitte eine gültige Postleitzahl eingeben'],
-      },
-      city: {
-        type: String,
-      },
-      country: {
-        type: String,
-        default: 'Deutschland',
-      },
-    }, */
     kidsNames: {
-        type: [String],
-        default: [],
+      type: [String],
+      default: [],
+    },
+    createdStories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Story',
       },
+    ],
   },
   {
     timestamps: true,
@@ -62,7 +48,6 @@ const UserSchema = new mongoose.Schema(
 // Custom id will set to the same as MongoDB's _id
 UserSchema.pre('save', function (next) {
   if (!this.id) {
-    // If there is no other id set
     this.id = this._id.toString();
   }
   next();
