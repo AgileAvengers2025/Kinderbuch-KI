@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/api/users");
 const storyRoutes = require("./routes/api/stories");
@@ -14,6 +15,16 @@ const app = express();
 
 const SECRET = process.env.SECRET;
 
+// Use Helmet for security
+app.use(
+    helmet({
+        // disabled so inline scripts can be used in the frontend
+        contentSecurityPolicy: false,
+        //allows external resources
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+    })
+);
+
 // Cors middleware with origin and credentials
 app.use(cors({ origin: true, credentials: true }));
 
@@ -24,27 +35,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middleware for parsing cookies
 app.use(cookieParser());
 
+const refreshTokens = new Set();
+
 // Login route
 app.post("/login", (req, res) => {
     const user = { id: 1, name: "Frontend" };
-    const accessToken = jwt.sign(user, SECRET, { expiresIn: "1h" });
+    const accessToken = jwt.sign(user, SECRET, { expiresIn: "15m" });
     const refreshToken = jwt.sign(user, SECRET, { expiresIn: "7d" });
 
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-    });
-
-    res.json({ accessToken });
+    refreshTokens.add(refreshToken);
+    res.json({ accessToken, refreshToken });
 });
+
+// Logout route
+app.post("/logout", (req, res) => {
+    const { refreshToken } = req.body;
+    refreshTokens.delete(refreshToken);
+    res.json({ message: "Logged out successfully" });
+});
+
 
 // Refresh token route
 app.post("/refresh-token", (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-
-    if (!refreshToken) {
-        return res.status(401).json({ message: "No refresh token provided" });
+    const { refreshToken } = req.body;
+    if (!refreshToken || !refreshTokens.has(refreshToken)) {
+        return res.status(403).json({ message: "Invalid refresh token" });
     }
 
     jwt.verify(refreshToken, SECRET, (err, decoded) => {
@@ -52,16 +67,10 @@ app.post("/refresh-token", (req, res) => {
             return res.status(403).json({ message: "Invalid refresh token" });
         }
 
-        const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, SECRET, { expiresIn: "1h" });
+        const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, SECRET, { expiresIn: "15m" });
 
         res.json({ accessToken: newAccessToken });
     });
-});
-
-// Logout route
-app.post("/logout", (req, res) => {
-    res.clearCookie("refreshToken");
-    res.json({ message: "Logged out" });
 });
 
 // Use the routes module as a middleware
