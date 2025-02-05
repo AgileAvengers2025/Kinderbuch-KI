@@ -76,6 +76,7 @@ app.post("/refresh-token", (req, res) => {
 // Use the routes module as a middleware
 app.use("/api/users", userRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/contents", contentRoutes);
 
 // Connect Database
 connectDB();
