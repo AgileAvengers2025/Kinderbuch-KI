@@ -14,6 +14,7 @@ require("dotenv").config();
 const app = express();
 
 const SECRET = process.env.SECRET;
+const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // Use Helmet for security
 app.use(
