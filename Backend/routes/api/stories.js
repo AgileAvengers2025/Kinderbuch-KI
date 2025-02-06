@@ -2,21 +2,22 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
+const Story = require("../../models/Story");
+const User = require("../../models/User");
 
 // Get all stories
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, async (req, res, next) => {
     try {
         const stories = await Story.find();
         logger.info(`Fetched all stories - Count: ${stories.length}`);
         res.status(200).json(stories);
     } catch (error) {
-        logger.error(`Error fetching stories: ${error.message}`);
-        res.status(500).json({ error: "Server error while fetching stories." });
+        next(error); // Pass error to centralized error handler
     }
 });
 
 // Get a single story by ID
-router.get("/:id", authMiddleware, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res, next) => {
     try {
         const story = await Story.findById(req.params.id);
         if (!story) {
@@ -27,13 +28,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
         logger.info(`Fetched story ${req.params.id} - Title: ${story.title}`);
         res.status(200).json(story);
     } catch (error) {
-        logger.error(`Error fetching story ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while fetching the story." });
+        next(error);
     }
 });
 
 // Create a new story
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, async (req, res, next) => {
     try {
         const { title, content } = req.body;
 
@@ -57,13 +57,12 @@ router.post("/", authMiddleware, async (req, res) => {
         logger.info(`New story created: ${newStory.title} by user ${req.user.id}`);
         res.status(201).json(newStory);
     } catch (error) {
-        logger.error(`Error creating story: ${error.message}`);
-        res.status(500).json({ error: "Server error while creating the story." });
+        next(error);
     }
 });
 
 // Update a story by ID (only owner can update)
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res, next) => {
     try {
         const story = await Story.findById(req.params.id);
         if (!story) {
@@ -85,13 +84,12 @@ router.put("/:id", authMiddleware, async (req, res) => {
         logger.info(`Story updated: ${req.params.id} by user ${req.user.id}`);
         res.status(200).json(updatedStory);
     } catch (error) {
-        logger.error(`Error updating story ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while updating the story." });
+        next(error);
     }
 });
 
 // Delete a story by ID (only owner can delete)
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res, next) => {
     try {
         const story = await Story.findById(req.params.id);
         if (!story) {
@@ -113,8 +111,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         logger.info(`Story deleted: ${req.params.id} by user ${req.user.id}`);
         res.status(200).json({ message: "Story deleted successfully." });
     } catch (error) {
-        logger.error(`Error deleting story ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while deleting the story." });
+        next(error);
     }
 });
 
