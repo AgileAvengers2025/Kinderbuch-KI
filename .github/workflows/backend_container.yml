@@ -18,15 +18,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Create .env file
-        run: |
-          cat <<EOF > ./Backend/.env
-          SECRET=${{ secrets.SECRET }}
-          MONGO_URI=${{ secrets.MONGO_URI }}
-          EOF
-
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
         working-directory: ./Backend
 
       - name: Log in to Docker Hub
