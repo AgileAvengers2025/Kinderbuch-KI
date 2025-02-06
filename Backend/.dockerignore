@@ -1,0 +1,40 @@
+# Node modules & dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment variables & secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.DS_Store
+
+# Logs
+logs
+*.log
+logs/*.log
+debug.log
+
+# Build artifacts
+dist
+build
+coverage
+.tmp
+.cache
+
+# Docker files
+Dockerfile.dev
+docker-compose.yml
+
+# Git & editor-specific files
+.git
+.gitignore
+.idea
+.vscode
+*.swp
+*.swo
+*.swn
