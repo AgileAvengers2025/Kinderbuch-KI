@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package.json .  
 
 # Install dependencies
-RUN npm install
+RUN npm install --ignore-scripts
 
 # Copy required folders and files explicitly
 COPY app.js .
