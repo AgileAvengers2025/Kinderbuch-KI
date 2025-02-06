@@ -2,8 +2,6 @@
 
 # dependencies
 /node_modules
-/frontend/node_modules
-
 /.pnp
 .pnp.*
 .yarn/*
@@ -17,8 +15,6 @@
 
 # next.js
 /.next/
-frontend/.next/
-
 /out/
 
 # production
@@ -43,6 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# pnpm lock file
-pnpm-lock.yaml
