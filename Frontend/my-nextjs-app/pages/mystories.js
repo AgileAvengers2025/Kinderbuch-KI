@@ -1,4 +1,4 @@
-import Navbar from "Kinderbuch-KI\Frontend\my-nextjs-app\components\Navbar.js";
+import Navbar from "../components/Navbar";
 
 export default function MyStories() {
     return (
