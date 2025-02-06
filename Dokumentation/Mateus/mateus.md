@@ -9,3 +9,8 @@
 
 ![alt text](image-1.png)
 
+# 5.02
+
+-Wireframes and prototyping 
+
+![alt text](image-3.png)

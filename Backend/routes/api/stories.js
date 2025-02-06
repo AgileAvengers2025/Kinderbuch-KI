@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../../middleware/authMiddleware");
+const { logger } = require("../../middleware/logging");
 
 // Test route
 router.get("/", authMiddleware, (req, res) => {
+    logger.info(`User ${req.user.name} accessed /api/stories`);
     res.send(`Hello, this is the /api/stories/ route for ${req.user.name}`);
 });
 
@@ -11,8 +13,10 @@ router.get("/", authMiddleware, (req, res) => {
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const stories = await Story.find();
+        logger.info(`Fetched all stories - Count: ${stories.length}`);
         res.status(200).json(stories);
     } catch (error) {
+        logger.error(`Error fetching stories: ${error.message}`);
         res.status(500).json({ error: "Server error while fetching stories." });
     }
 });
@@ -21,10 +25,15 @@ router.get("/", authMiddleware, async (req, res) => {
 router.get("/:id", authMiddleware, async (req, res) => {
     try {
         const story = await Story.findById(req.params.id);
-        if (!story) return res.status(404).json({ error: "Story not found." });
+        if (!story) {
+            logger.warn(`Story with ID ${req.params.id} not found`);
+            return res.status(404).json({ error: "Story not found." });
+        }
 
+        logger.info(`Fetched story ${req.params.id} - Title: ${story.title}`);
         res.status(200).json(story);
     } catch (error) {
+        logger.error(`Error fetching story ${req.params.id}: ${error.message}`);
         res.status(500).json({ error: "Server error while fetching the story." });
     }
 });
@@ -35,24 +44,26 @@ router.post("/", authMiddleware, async (req, res) => {
         const { title, content } = req.body;
 
         if (!title || !content || !Array.isArray(content)) {
+            logger.warn(`Story creation failed - Invalid input from user ${req.user.id}`);
             return res.status(400).json({ error: "Title and valid content are required." });
         }
 
         const newStory = new Story({
-            userId: req.user.id, // Assign story to logged-in user
+            userId: req.user.id,
             title,
             content,
         });
 
         await newStory.save();
 
-        // Add story to user's createdStories list
         await User.findByIdAndUpdate(req.user.id, {
             $push: { createdStories: newStory._id },
         });
 
+        logger.info(`New story created: ${newStory.title} by user ${req.user.id}`);
         res.status(201).json(newStory);
     } catch (error) {
+        logger.error(`Error creating story: ${error.message}`);
         res.status(500).json({ error: "Server error while creating the story." });
     }
 });
@@ -61,10 +72,13 @@ router.post("/", authMiddleware, async (req, res) => {
 router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const story = await Story.findById(req.params.id);
-        if (!story) return res.status(404).json({ error: "Story not found." });
+        if (!story) {
+            logger.warn(`Story update failed - ID ${req.params.id} not found`);
+            return res.status(404).json({ error: "Story not found." });
+        }
 
-        // Check if logged-in user owns the story
         if (story.userId.toString() !== req.user.id) {
+            logger.warn(`Unauthorized update attempt by user ${req.user.id} on story ${req.params.id}`);
             return res.status(403).json({ error: "Unauthorized to update this story." });
         }
 
@@ -74,8 +88,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
             { new: true }
         );
 
+        logger.info(`Story updated: ${req.params.id} by user ${req.user.id}`);
         res.status(200).json(updatedStory);
     } catch (error) {
+        logger.error(`Error updating story ${req.params.id}: ${error.message}`);
         res.status(500).json({ error: "Server error while updating the story." });
     }
 });
@@ -84,22 +100,26 @@ router.put("/:id", authMiddleware, async (req, res) => {
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const story = await Story.findById(req.params.id);
-        if (!story) return res.status(404).json({ error: "Story not found." });
+        if (!story) {
+            logger.warn(`Story deletion failed - ID ${req.params.id} not found`);
+            return res.status(404).json({ error: "Story not found." });
+        }
 
-        // Check if logged-in user owns the story
         if (story.userId.toString() !== req.user.id) {
+            logger.warn(`Unauthorized delete attempt by user ${req.user.id} on story ${req.params.id}`);
             return res.status(403).json({ error: "Unauthorized to delete this story." });
         }
 
         await Story.findByIdAndDelete(req.params.id);
 
-        // Remove story from user's createdStories list
         await User.findByIdAndUpdate(req.user.id, {
             $pull: { createdStories: req.params.id },
         });
 
+        logger.info(`Story deleted: ${req.params.id} by user ${req.user.id}`);
         res.status(200).json({ message: "Story deleted successfully." });
     } catch (error) {
+        logger.error(`Error deleting story ${req.params.id}: ${error.message}`);
         res.status(500).json({ error: "Server error while deleting the story." });
     }
 });
