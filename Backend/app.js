@@ -18,6 +18,8 @@ const contentRoutes = require("./routes/api/contents");
 const app = express();
 
 const SECRET = process.env.SECRET;
+const SONAR_TOKEN = process.env.SONAR_TOKEN;
+
 const refreshTokens = new Set();
 
 // Use Helmet for security
