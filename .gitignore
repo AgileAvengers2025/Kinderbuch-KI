@@ -1,3 +1,4 @@
 /node_modules
+/Frontend/node_modules
 .env
 /.git
