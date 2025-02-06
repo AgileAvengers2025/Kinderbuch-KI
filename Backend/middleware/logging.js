@@ -57,4 +57,12 @@ const errorLogger = expressWinston.errorLogger({
     winstonInstance: logger,
 });
 
-module.exports = { requestLogger, errorLogger, logger };
+const errorHandler = (err, req, res, next) => {
+    logger.error(`Error: ${err.message}`, { stack: err.stack });
+
+    res.status(err.status || 500).json({
+        error: err.message || "Internal Server Error",
+    });
+};
+
+module.exports = { requestLogger, errorLogger, logger, errorHandler };

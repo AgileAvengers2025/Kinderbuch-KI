@@ -3,12 +3,6 @@ const router = express.Router();
 const { BedrockRuntimeClient, InvokeModelCommand } = require("@aws-sdk/client-bedrock-runtime");
 const authMiddleware = require("../../middleware/authMiddleware");
 
-// Test route
-router.get("/", authMiddleware, (req, res) => {
-    res.send(`Hello, this is the /api/contents/ route for ${req.user.name}`);
-});
-
-
 // AWS Bedrock client config
 const bedrockClient = new BedrockRuntimeClient({
     region: "eu-central-1",
@@ -18,8 +12,13 @@ const bedrockClient = new BedrockRuntimeClient({
     },
 });
 
+// Test route
+router.get("/", authMiddleware, (req, res) => {
+    res.send(`Hello, this is the /api/contents/ route for ${req.user.name}`);
+});
+
 // Example route to generate text
-router.post("/generate", authMiddleware, async (req, res) => {
+router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
         const { prompt, modelId, addTextBefore, addTextAfter } = req.body;
 
@@ -27,9 +26,9 @@ router.post("/generate", authMiddleware, async (req, res) => {
             return res.status(400).json({ error: "Prompt is required" });
         }
 
-        const model = modelId || "anthropic.claude-v2"; // Which model should be used
+        const model = modelId || "anthropic.claude-v2"; // Default model
 
-        // Construct the prompt to be send out
+        // Construct the prompt
         let finalPrompt = `${addTextBefore || ""} ${prompt} ${addTextAfter || ""}`.trim();
 
         const command = new InvokeModelCommand({
@@ -47,8 +46,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
 
         res.json({ response: responseData });
     } catch (error) {
-        console.error("Error calling Amazon Bedrock:", error);
-        res.status(500).json({ error: "Internal server error", details: error.message });
+        next(error);
     }
 });
 
