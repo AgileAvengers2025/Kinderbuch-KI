@@ -4,12 +4,6 @@ const User = require("../../models/User");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
 
-// Test route
-router.get("/", authMiddleware, (req, res) => {
-    logger.info(`User ${req.user.name} accessed /api/users`);
-    res.send(`Hello, this is the /api/users/ route for ${req.user.name}`);
-});
-
 // Get all users
 router.get("/", authMiddleware, async (req, res) => {
     try {

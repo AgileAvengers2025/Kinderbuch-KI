@@ -3,12 +3,6 @@ const router = express.Router();
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
 
-// Test route
-router.get("/", authMiddleware, (req, res) => {
-    logger.info(`User ${req.user.name} accessed /api/stories`);
-    res.send(`Hello, this is the /api/stories/ route for ${req.user.name}`);
-});
-
 // Get all stories
 router.get("/", authMiddleware, async (req, res) => {
     try {
