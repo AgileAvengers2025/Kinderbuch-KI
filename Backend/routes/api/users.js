@@ -5,19 +5,18 @@ const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
 
 // Get all users
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, async (req, res, next) => {
     try {
         const users = await User.find();
         logger.info(`Fetched all users - Count: ${users.length}`);
         res.status(200).json(users);
     } catch (error) {
-        logger.error(`Error fetching users: ${error.message}`);
-        res.status(500).json({ error: "Server error while fetching users." });
+        next(error);
     }
 });
 
 // Get user by ID
-router.get("/:id", authMiddleware, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id).populate("createdStories");
 
@@ -29,13 +28,12 @@ router.get("/:id", authMiddleware, async (req, res) => {
         logger.info(`Fetched user ${req.params.id} - ${user.email}`);
         res.status(200).json(user);
     } catch (error) {
-        logger.error(`Error fetching user ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while fetching the user." });
+        next(error);
     }
 });
 
 // Create a new user
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
     try {
         const { email, passwordHash, displayName, kidsNames } = req.body;
 
@@ -56,13 +54,12 @@ router.post("/", async (req, res) => {
         logger.info(`New user created: ${email}`);
         res.status(201).json(newUser);
     } catch (error) {
-        logger.error(`Error creating user: ${error.message}`);
-        res.status(500).json({ error: "Server error while creating the user." });
+        next(error);
     }
 });
 
 // Update user by ID
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res, next) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
@@ -78,13 +75,12 @@ router.put("/:id", authMiddleware, async (req, res) => {
         logger.info(`User updated: ${req.params.id}`);
         res.status(200).json(updatedUser);
     } catch (error) {
-        logger.error(`Error updating user ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while updating the user." });
+        next(error);
     }
 });
 
 // Delete user by ID
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res, next) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
 
@@ -96,8 +92,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         logger.info(`User deleted: ${req.params.id}`);
         res.status(200).json({ message: "User deleted successfully." });
     } catch (error) {
-        logger.error(`Error deleting user ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: "Server error while deleting the user." });
+        next(error);
     }
 });
 

@@ -1,23 +1,26 @@
 const express = require("express");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
-const userRoutes = require("./routes/api/users");
-const storyRoutes = require("./routes/api/stories");
-const contentRoutes = require("./routes/api/contents");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
-
 require("dotenv").config();
 
 // Import middleware
-const { requestLogger, errorLogger, logger } = require("./middleware/logging");
+const { requestLogger, errorLogger, errorHandler, logger } = require("./middleware/logging");
 const authMiddleware = require("./middleware/authMiddleware");
+
+// Import API routes
+const userRoutes = require("./routes/api/users");
+const storyRoutes = require("./routes/api/stories");
+const contentRoutes = require("./routes/api/contents");
 
 const app = express();
 
 const SECRET = process.env.SECRET;
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
+
+const refreshTokens = new Set();
 
 // Use Helmet for security
 app.use(
@@ -37,46 +40,60 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Use logging middleware
 app.use(requestLogger);
 
-const refreshTokens = new Set();
-
 // Login route
-app.post("/login", (req, res) => {
-    const user = { id: 1, name: "Frontend" };
-    const accessToken = jwt.sign(user, SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign(user, SECRET, { expiresIn: "7d" });
+app.post("/login", (req, res, next) => {
+    try {
+        const user = { id: 1, name: "Frontend" };
+        const accessToken = jwt.sign(user, SECRET, { expiresIn: "15m" });
+        const refreshToken = jwt.sign(user, SECRET, { expiresIn: "7d" });
 
-    refreshTokens.add(refreshToken);
-    logger.info(`User ${user.name} logged in`); // Log login event
+        refreshTokens.add(refreshToken);
+        logger.info(`User ${user.name} logged in`);
 
-    res.json({ accessToken, refreshToken });
+        res.json({ accessToken, refreshToken });
+    } catch (error) {
+        next(error); // Pass error to centralized error handler
+    }
 });
 
 // Logout route
-app.post("/logout", (req, res) => {
-    const { refreshToken } = req.body;
-    refreshTokens.delete(refreshToken);
-    logger.info("User logged out");
-    res.json({ message: "Logged out successfully" });
+app.post("/logout", (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken || !refreshTokens.has(refreshToken)) {
+            throw new Error("Invalid refresh token");
+        }
+
+        refreshTokens.delete(refreshToken);
+        logger.info("User logged out");
+        res.json({ message: "Logged out successfully" });
+    } catch (error) {
+        next(error);
+    }
 });
 
 // Refresh token route
-app.post("/refresh-token", (req, res) => {
-    const { refreshToken } = req.body;
-    if (!refreshToken || !refreshTokens.has(refreshToken)) {
-        logger.warn("Invalid refresh token attempt");
-        return res.status(403).json({ message: "Invalid refresh token" });
-    }
-
-    jwt.verify(refreshToken, SECRET, (err, decoded) => {
-        if (err) {
-            logger.error("Invalid refresh token verification failed");
-            return res.status(403).json({ message: "Invalid refresh token" });
+app.post("/refresh-token", (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken || !refreshTokens.has(refreshToken)) {
+            logger.warn("Invalid refresh token attempt");
+            throw new Error("Invalid refresh token");
         }
 
-        const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, SECRET, { expiresIn: "15m" });
-        logger.info(`New access token issued for user ${decoded.name}`);
-        res.json({ accessToken: newAccessToken });
-    });
+        jwt.verify(refreshToken, SECRET, (err, decoded) => {
+            if (err) {
+                logger.error("Invalid refresh token verification failed");
+                throw new Error("Invalid refresh token");
+            }
+
+            const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, SECRET, { expiresIn: "15m" });
+            logger.info(`New access token issued for user ${decoded.name}`);
+            res.json({ accessToken: newAccessToken });
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 // Use API routes
@@ -88,15 +105,20 @@ app.use("/api/contents", contentRoutes);
 connectDB();
 
 // Test Route
-app.get("/", authMiddleware, (req, res) => {
-    logger.info(`Protected route accessed by ${req.user.name}`);
-    res.send(`Hello ${req.user.name}, welcome to the protected route!`);
+app.get("/", authMiddleware, (req, res, next) => {
+    try {
+        logger.info(`Protected route accessed by ${req.user.name}`);
+        res.send(`Hello ${req.user.name}, welcome to the protected route!`);
+    } catch (error) {
+        next(error);
+    }
 });
 
-// Use error logging middleware
+// Use error logging/handling middleware
 app.use(errorLogger); // Log errors
+app.use(errorHandler); // Handle errors
 
 const port = process.env.PORT || 8082;
 app.listen(port, () => logger.info(`Server running on port ${port}`));
 
-module.exports = logger; // Export logger for use in other files
+module.exports = logger;
