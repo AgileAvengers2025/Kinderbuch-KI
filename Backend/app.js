@@ -14,6 +14,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 const userRoutes = require("./routes/api/users");
 const storyRoutes = require("./routes/api/stories");
 const contentRoutes = require("./routes/api/contents");
+const promptRoutes = require("./routes/api/prompts");
 
 const app = express();
 
