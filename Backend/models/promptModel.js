@@ -18,6 +18,11 @@ const promptSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  scene:
+  {
+    type: String,
+    required: true
   }
 });
 
