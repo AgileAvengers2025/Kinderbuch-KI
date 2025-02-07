@@ -101,6 +101,7 @@ app.post("/refresh-token", (req, res, next) => {
 app.use("/api/users", userRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/contents", contentRoutes);
+app.use("/api/prompts", promptRoutes);
 
 // Connect Database
 connectDB();
