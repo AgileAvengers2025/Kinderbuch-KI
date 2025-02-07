@@ -14,3 +14,7 @@
 -Wireframes and prototyping 
 
 ![alt text](image-3.png)
+
+# 06/07.02
+
+![alt text](image-4.png)
