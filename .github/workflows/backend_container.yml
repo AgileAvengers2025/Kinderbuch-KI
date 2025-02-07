@@ -31,5 +31,5 @@ jobs:
       - name: Build Docker image
         run: docker buildx build -t ${{ secrets.BACKEND_DOCKER_USERNAME }}/kinderbuch-backend:latest ./Backend
 
-      - name: Push Docker image
+      - name: Push Docker imagegit 
         run: docker push ${{ secrets.BACKEND_DOCKER_USERNAME }}/kinderbuch-backend:latest
