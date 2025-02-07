@@ -26,4 +26,4 @@ const promptSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model("prompt", promptSchema);
+module.exports = mongoose.model("Prompt", promptSchema);

@@ -1,4 +1,4 @@
-const Prompt = require("./models/promptModel");
+const Prompt = require("../../models/Prompt");
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../../middleware/authMiddleware");
@@ -32,6 +32,33 @@ const { ThrottlingException } = require("@aws-sdk/client-bedrock-runtime");
 //   ],
 // };
 
+router.post("/testdata", authMiddleware, async (req, res) =>
+{
+    try {
+        const { id, title, prompt, scene } = req.body;
+    
+        // Check if all required fields are provided
+        if (!id || !title || !prompt || !scene) {
+        return res.status(400).json({ error: "All fields are required." });
+        }
+    
+        // Create a new prompt document
+        const newPrompt = new Prompt({
+        id,
+        title,
+        prompt,
+        scene,
+        });
+
+        const savedPrompt = await newPrompt.save();
+        res.status(201).json(savedPrompt);
+        } catch (error) {
+        console.error("Error saving prompt:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+    
+
 // GET all prompts
 router.get("/", authMiddleware, async (req, res) => {
     try {
@@ -60,5 +87,7 @@ router.get("/", authMiddleware, async (req, res) => {
         next(error);
     }
   });
+
+  
 
 module.exports = router;
