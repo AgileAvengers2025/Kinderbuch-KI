@@ -49,20 +49,29 @@ app.post("/login", async (req, res, next) => {
         const { email, passwordHash } = req.body;
 
         if (!email || !passwordHash) {
+            logger.error("Login failed - Missing email or password.");
             return res.status(400).json({ error: "Email and hashed password are required." });
+        }
+
+        // Email validation regex
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            logger.error(`Login failed - Invalid email format: ${email}`);
+            return res.status(400).json({ error: "Invalid email format." });
         }
 
         const user = await User.findOne({ email });
         if (!user) {
+            logger.error(`Login failed - User not found: ${email}`);
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
         if (passwordHash !== user.passwordHash) {
+            logger.error(`Login failed - Incorrect password for email: ${email}`);
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
         const payload = { id: user.id, name: user.displayName };
-        //const accessToken = jwt.sign(payload, SECRET, { expiresIn: "15m" });
         const accessToken = jwt.sign(payload, SECRET, { expiresIn: "2h" });
         const refreshToken = jwt.sign(payload, SECRET, { expiresIn: "7d" });
 
@@ -71,9 +80,12 @@ app.post("/login", async (req, res, next) => {
 
         res.json({ accessToken, refreshToken });
     } catch (error) {
+        logger.error(`Login error: ${error.message}`);
         next(error);
     }
 });
+
+
 
 // Logout route
 app.post("/logout", (req, res, next) => {
