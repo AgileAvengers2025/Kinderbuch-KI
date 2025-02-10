@@ -43,25 +43,33 @@ router.post("/", async (req, res, next) => {
             return res.status(400).json({ error: "Email and password are required." });
         }
 
-        const existingUser = await User.findOne({ email });
+        const sanitizedEmail = String(email).trim().toLowerCase();
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(sanitizedEmail)) {
+            logger.warn(`User creation failed - Invalid email format: ${sanitizedEmail}`);
+            return res.status(400).json({ error: "Invalid email format." });
+        }
+
+        const existingUser = await User.findOne({ email: sanitizedEmail }).lean();
         if (existingUser) {
-            logger.warn(`User creation failed - Email already exists: ${email}`);
+            logger.warn(`User creation failed - Email already exists: ${sanitizedEmail}`);
             return res.status(400).json({ error: "User already exists." });
         }
 
         const newUser = new User({
-            id: new mongoose.Types.ObjectId().toString(),
-            email,
-            passwordHash,
-            displayName,
-            kidsNames
+            email: sanitizedEmail,
+            passwordHash: hashedPassword,
+            displayName: displayName || "",
+            kidsNames: kidsNames || [],
         });
 
         await newUser.save();
 
-        logger.info(`New user created: ${email}`);
+        logger.info(`New user created: ${sanitizedEmail}`);
         res.status(201).json(newUser);
     } catch (error) {
+        logger.error(`User creation error: ${error.message}`);
         next(error);
     }
 });

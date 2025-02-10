@@ -53,15 +53,18 @@ app.post("/login", async (req, res, next) => {
             return res.status(400).json({ error: "Email and hashed password are required." });
         }
 
+        const sanitizedEmail = String(email).trim().toLowerCase();
+
+        // Regex to check that input is an email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            logger.error(`Login failed - Invalid email format: ${email}`);
+        if (!emailRegex.test(sanitizedEmail)) {
+            logger.error(`Login failed - Invalid email format: ${sanitizedEmail}`);
             return res.status(400).json({ error: "Invalid email format." });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: sanitizedEmail }).lean();
         if (!user) {
-            logger.error(`Login failed - User not found: ${email}`);
+            logger.error(`Login failed - User not found: ${sanitizedEmail}`);
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
