@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
 const Story = require("../../models/Story");
@@ -43,6 +44,7 @@ router.post("/", authMiddleware, async (req, res, next) => {
         }
 
         const newStory = new Story({
+            id: new mongoose.Types.ObjectId().toString(), // Generate unique ID
             userId: req.user.id,
             title,
             content,
@@ -51,7 +53,7 @@ router.post("/", authMiddleware, async (req, res, next) => {
         await newStory.save();
 
         await User.findByIdAndUpdate(req.user.id, {
-            $push: { createdStories: newStory._id },
+            $push: { createdStories: new mongoose.Types.ObjectId(newStory._id) },
         });
 
         logger.info(`New story created: ${newStory.title} by user ${req.user.id}`);
