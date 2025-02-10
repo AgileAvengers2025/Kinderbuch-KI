@@ -2,8 +2,8 @@ import Button from "./components/Button";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-blue-50 text-center">
-      <div className="flex flex-col items-center pt-8">
+    <div className="flex flex-col min-h-screen items-center justify-center text-center">
+      <div>
         <h1 className="text-4xl font-bold text-blue-700">
           Willkommen auf der Kinderbuch-KI Homepage
         </h1>
