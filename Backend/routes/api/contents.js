@@ -21,10 +21,10 @@ router.get("/", authMiddleware, (req, res) => {
 // Example route to generate text
 router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
-        const { title, modelId, addTextBefore, addTextAfter } = req.body;
+        const { title } = req.body;
 
-        addTextBefore = "";
-        addTextAfter = "";
+        const addTextBefore = "Before the prompt text";
+        const addTextAfter = "After the prompt text";
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
