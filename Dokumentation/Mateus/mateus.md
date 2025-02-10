@@ -18,3 +18,7 @@
 # 06/07.02
 
 ![alt text](image-4.png)
+
+# 08.02
+
+-doing some frontend and doing design
