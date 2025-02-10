@@ -51,14 +51,15 @@ router.post("/testdata", authMiddleware, async (req, res) =>
         });
 
         const savedPrompt = await newPrompt.save();
+        logger.info(`Saved prompt ${savedPrompt.id} - Title: ${savedPrompt.title}`);
         res.status(201).json(savedPrompt);
-        } catch (error) {
-        console.error("Error saving prompt:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+        } 
+        catch (error) 
+        {
+            next(error);
+        }
     });
     
-
 // GET all prompts
 router.get("/", authMiddleware, async (req, res) => {
     try {
@@ -76,7 +77,7 @@ router.get("/", authMiddleware, async (req, res) => {
       const prompt = await Prompt.findById(req.params.id);
       if (!prompt) 
         {   
-            loggar.warn(`Prompt with ID ${req.params.id} not found`);
+            logger.warn(`Prompt with ID ${req.params.id} not found`);
             return res.status(404).json({ message: "Prompt not found" });
         }
         then(res.status(200).json(prompt),
@@ -87,7 +88,5 @@ router.get("/", authMiddleware, async (req, res) => {
         next(error);
     }
   });
-
-  
 
 module.exports = router;
