@@ -21,7 +21,7 @@ router.get("/", authMiddleware, (req, res) => {
 // Example route to generate text
 router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
-        const { title } = req.body;
+        let { title } = req.body;
 
         const addTextBefore = "Before the prompt text";
         const addTextAfter = "After the prompt text";
@@ -31,7 +31,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
         }
 
         title = title.trim();
-        
+
         // Fetch prompt from the database using the title
         const promptData = await Prompt.findOne({ title });
 
