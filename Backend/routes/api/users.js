@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const User = require("../../models/User");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
@@ -38,7 +39,7 @@ router.post("/", async (req, res, next) => {
         const { email, passwordHash, displayName, kidsNames } = req.body;
 
         if (!email || !passwordHash) {
-            logger.warn(`User creation failed - Missing fields`);
+            logger.warn("User creation failed - Missing fields");
             return res.status(400).json({ error: "Email and password are required." });
         }
 
@@ -48,7 +49,14 @@ router.post("/", async (req, res, next) => {
             return res.status(400).json({ error: "User already exists." });
         }
 
-        const newUser = new User({ email, passwordHash, displayName, kidsNames });
+        const newUser = new User({
+            id: new mongoose.Types.ObjectId().toString(),
+            email,
+            passwordHash,
+            displayName,
+            kidsNames
+        });
+
         await newUser.save();
 
         logger.info(`New user created: ${email}`);

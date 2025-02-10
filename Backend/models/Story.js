@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 
 const StorySchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     userId: {
       type: String,
       required: true,
@@ -45,13 +40,5 @@ const StorySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// Custom id will set to the same as MongoDB's _id
-StorySchema.pre('save', function (next) {
-  if (!this.id) {
-    this.id = this._id.toString();
-  }
-  next();
-});
 
 module.exports = mongoose.model('Story', StorySchema);

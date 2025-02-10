@@ -1,6 +1,7 @@
 const Prompt = require("../../models/Prompt");
 const express = require("express");
 const router = express.Router();
+const mongoose = require('mongoose');
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
 const { ThrottlingException } = require("@aws-sdk/client-bedrock-runtime");
@@ -32,33 +33,26 @@ const { ThrottlingException } = require("@aws-sdk/client-bedrock-runtime");
 //   ],
 // };
 
-router.post("/testdata", authMiddleware, async (req, res) =>
-{
-    try {
-        const { id, title, prompt, scene } = req.body;
-    
-        // Check if all required fields are provided
-        if (!id || !title || !prompt || !scene) {
-        return res.status(400).json({ error: "All fields are required." });
-        }
-    
-        // Create a new prompt document
-        const newPrompt = new Prompt({
-        id,
-        title,
-        prompt,
-        scene,
-        });
+router.post("/testdata", authMiddleware, async (req, res, next) => {
+  try {
+      const { id, title, prompt, scene } = req.body;
 
-        const savedPrompt = await newPrompt.save();
-        res.status(201).json(savedPrompt);
-        } catch (error) {
-        console.error("Error saving prompt:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+      if (!id || !title || !prompt || !scene) {
+          return res.status(400).json({ error: "All fields are required." });
       }
-    });
-    
 
+      const newPrompt = new Prompt({ id, title, prompt, scene });
+
+      const savedPrompt = await newPrompt.save();
+      logger.info(`Saved prompt ${savedPrompt.id} - Title: ${savedPrompt.title}`);
+
+      res.status(201).json(savedPrompt);
+  } catch (error) {
+      next(error);
+  }
+});
+
+    
 // GET all prompts
 router.get("/", authMiddleware, async (req, res) => {
     try {
@@ -66,28 +60,31 @@ router.get("/", authMiddleware, async (req, res) => {
             logger.info(`Fetched all prompts - Count: ${prompts.length}`);
             res.status(200).json(prompts);
         } catch (error) {
-            next(error); // Pass error to centralized error handler
+            next(error);
         }
   });
   
   // GET a single prompt by ID
-  router.get("/:id", authMiddleware, async (req, res) => {
+  router.get("/:id", authMiddleware, async (req, res, next) => {
     try {
-      const prompt = await Prompt.findById(req.params.id);
-      if (!prompt) 
-        {   
-            loggar.warn(`Prompt with ID ${req.params.id} not found`);
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
+
+        const prompt = await Prompt.findById(id);
+        if (!prompt) {   
+            logger.warn(`Prompt with ID ${id} not found`);
             return res.status(404).json({ message: "Prompt not found" });
         }
-        then(res.status(200).json(prompt),
-        logger.info(`Fetched prompt ${req.params.id} - Title: ${prompt.title}`),
-        res.json(prompt));
+
+        logger.info(`Fetched prompt ${id} - Title: ${prompt.title}`);
+        res.status(200).json(prompt);
     } 
     catch (error) {
         next(error);
     }
-  });
-
-  
+});
 
 module.exports = router;

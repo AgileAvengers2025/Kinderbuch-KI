@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const Prompt = require("../../models/Prompt");
 const { BedrockRuntimeClient, InvokeModelCommand } = require("@aws-sdk/client-bedrock-runtime");
 const authMiddleware = require("../../middleware/authMiddleware");
 
@@ -20,16 +21,33 @@ router.get("/", authMiddleware, (req, res) => {
 // Example route to generate text
 router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
-        const { prompt, modelId, addTextBefore, addTextAfter } = req.body;
+        const { title } = req.body;
 
-        if (!prompt) {
-            return res.status(400).json({ error: "Prompt is required" });
+        const addTextBefore = "Before the prompt text";
+        const addTextAfter = "After the prompt text";
+
+        if (!title) {
+            return res.status(400).json({ error: "Title is required" });
+        }
+
+        // Fetch prompt from the database using the title
+        const promptData = await Prompt.findOne({ title });
+
+        if (!promptData) {
+            return res.status(404).json({ error: "Prompt not found" });
+        }
+
+        const { prompt, scene } = promptData;
+
+        // Base text that applies to all prompts
+        let finalPrompt = `${addTextBefore || ""} ${prompt} ${addTextAfter || ""}`.trim();
+
+        // Add extra text only if scene === "1"
+        if (scene === "1") {
+            finalPrompt += " This is an additional instruction for scene 1.";
         }
 
         const model = modelId || "anthropic.claude-v2"; // Default model
-
-        // Construct the prompt
-        let finalPrompt = `${addTextBefore || ""} ${prompt} ${addTextAfter || ""}`.trim();
 
         const command = new InvokeModelCommand({
             modelId: model,
