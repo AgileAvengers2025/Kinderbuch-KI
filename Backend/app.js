@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+const User = require("./models/User");
+
 // Import middleware
 const { requestLogger, errorLogger, errorHandler, logger } = require("./middleware/logging");
 const authMiddleware = require("./middleware/authMiddleware");
@@ -42,18 +44,34 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // Login route
-app.post("/login", (req, res, next) => {
+app.post("/login", async (req, res, next) => {
     try {
-        const user = { id: 1, name: "Frontend" };
-        const accessToken = jwt.sign(user, SECRET, { expiresIn: "15m" });
-        const refreshToken = jwt.sign(user, SECRET, { expiresIn: "7d" });
+        const { email, passwordHash } = req.body;
+
+        if (!email || !passwordHash) {
+            return res.status(400).json({ error: "Email and hashed password are required." });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ error: "Invalid email or password." });
+        }
+
+        if (passwordHash !== user.passwordHash) {
+            return res.status(401).json({ error: "Invalid email or password." });
+        }
+
+        const payload = { id: user.id, name: user.displayName };
+        //const accessToken = jwt.sign(payload, SECRET, { expiresIn: "15m" });
+        const accessToken = jwt.sign(payload, SECRET, { expiresIn: "2h" });
+        const refreshToken = jwt.sign(payload, SECRET, { expiresIn: "7d" });
 
         refreshTokens.add(refreshToken);
-        logger.info(`User ${user.name} logged in`);
+        logger.info(`User ${user.displayName} logged in`);
 
         res.json({ accessToken, refreshToken });
     } catch (error) {
-        next(error); // Pass error to centralized error handler
+        next(error);
     }
 });
 
