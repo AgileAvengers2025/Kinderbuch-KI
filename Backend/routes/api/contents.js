@@ -26,7 +26,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             return res.status(400).json({ error: "Prompt is required" });
         }
 
-        const model = modelId || "anthropic.claude-v2"; // Default model
+        const model = modelId || "amazon.titan-embed-text-v1"; // Default model
 
         // Construct the prompt
         let finalPrompt = `${addTextBefore || ""} ${prompt} ${addTextAfter || ""}`.trim();
