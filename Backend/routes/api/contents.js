@@ -30,6 +30,8 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             return res.status(400).json({ error: "Title is required" });
         }
 
+        title = title.trim();
+        
         // Fetch prompt from the database using the title
         const promptData = await Prompt.findOne({ title });
 
