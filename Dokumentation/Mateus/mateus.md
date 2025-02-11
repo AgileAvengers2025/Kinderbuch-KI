@@ -22,3 +22,11 @@
 # 08.02
 
 -doing some frontend and doing design
+
+# 10.11
+
+--learning nextjs and doing frontend
+
+# 11.02
+
+-learning nextjs and doing frontend
