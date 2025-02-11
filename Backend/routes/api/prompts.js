@@ -41,10 +41,10 @@ router.post("/testdata", authMiddleware, async (req, res, next) => {
           return res.status(400).json({ error: "All fields are required." });
       }
 
-      const newPrompt = new Prompt({ id, title, prompt, scene });
+      const newPrompt = new Prompt({ title, prompt, scene });
 
       const savedPrompt = await newPrompt.save();
-      logger.info(`Saved prompt ${savedPrompt.id} - Title: ${savedPrompt.title}`);
+      logger.info(`Saved prompt - Title: ${savedPrompt.title}`);
 
       res.status(201).json(savedPrompt);
   } catch (error) {
