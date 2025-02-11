@@ -49,7 +49,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             finalPrompt += " This is an additional instruction for scene 1.";
         }
 
-        const model = modelId || "anthropic.claude-v2"; // Default model
+        const model = modelId || "amazon.titan-embed-text-v1"; // Default model
 
         const command = new InvokeModelCommand({
             modelId: model,
