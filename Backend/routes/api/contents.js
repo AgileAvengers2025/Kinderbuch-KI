@@ -26,8 +26,8 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
         let { title } = req.body;
 
-        const addTextBefore = "Before the prompt text.";
-        const addTextAfter = "After the prompt text.";
+        const addTextBefore = " ";
+        const addTextAfter = " ";
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
@@ -49,7 +49,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
 
         // Add extra text only if scene === "1"
         if (scene === "1") {
-            finalPrompt += " This is an additional instruction for scene 1.";
+            finalPrompt += " ";
         }
 
 
