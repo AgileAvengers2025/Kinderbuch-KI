@@ -1,2 +1,10 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+:root {
+  --adventure: linear-gradient(to bottom left, #ed443a 28.13%, #fca43c 84.09%);
+  --curiosity: linear-gradient(to bottom right, #a4eaef 17.06%, #9c8cfa 85.11%);
+  --calm: linear-gradient(to bottom right, #dcc8e9 13.82%, #f8ceee 82.83%);
+
+  --peace: linear-gradient(190deg, #f7c898 15.21%, #def0f5 83.3%);
+}
 

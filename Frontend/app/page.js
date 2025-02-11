@@ -1,13 +1,14 @@
 import Button from "./components/Button";
 
 export default function Home() {
+ 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center text-center">
       <div>
-        <h1 className="text-4xl font-bold text-blue-700">
+        <h1 className="text-4xl font-bold">
           Willkommen auf der Kinderbuch-KI Homepage
         </h1>
-        <p className="mt-2 text-lg text-gray-700">
+        <p className="mt-2 text-lg">
           Erstelle personalisierte Geschichten für Kinder.
         </p>
       </div>
@@ -16,7 +17,7 @@ export default function Home() {
         <Button variant="secondary" href="/login">
           Login
         </Button>
-        <Button variant="tertiary">Try</Button>
+        <Button variant="tertiary">experiment🪄</Button>
       </div>
     </div>
   );

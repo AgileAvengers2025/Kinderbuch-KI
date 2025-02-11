@@ -1,15 +1,26 @@
 import Link from "next/link";
 
-export default function Button({ variant = "primary", children, href, onClick, className = "", ...rest }) {
-  const baseClasses = "w-64 px-8 py-4 rounded-[50px] text-3xl font-bold text-gray-900 shadow-[4px_4px_0px_rgba(0,0,0,0.5)]";
+export default function Button({
+  variant = "primary",
+  children,
+  href,
+  onClick,
+  className = "",
+  ...rest
+}) {
+  const baseClasses =
+    "w-66 px-8 py-4 rounded-[1.7rem] text-xl font-bold shadow-[0_4px_0_0_rgba(0,0,0,1)]";
   let variantClasses = "";
 
   if (variant === "primary") {
-    variantClasses = "";
+    variantClasses =
+      " bg-[image:var(--peace)] ring-2";
   } else if (variant === "secondary") {
-    variantClasses = "bg-green-500 text-white hover:bg-green-600 focus:ring-green-300";
+    variantClasses =
+      " bg-[image:var(--curiosity)] ring-2 ";
   } else if (variant === "tertiary") {
-    variantClasses = "bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300";
+    variantClasses =
+      "underline shadow-none ring-none ";
   }
 
   const classes = `${baseClasses} ${variantClasses} ${className}`;
