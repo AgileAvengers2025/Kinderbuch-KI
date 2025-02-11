@@ -26,9 +26,6 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
         let { title } = req.body;
 
-        const addTextBefore = " ";
-        const addTextAfter = " ";
-
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
         }
@@ -44,31 +41,33 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
 
         const { prompt, scene } = promptData;
 
-        // Base text that applies to all prompts
-        let finalPrompt = `${addTextBefore || ""} ${prompt} ${addTextAfter || ""}`.trim();
+        // Base text
+        let finalPrompt = `Before the prompt text. ${prompt} After the prompt text.`.trim();
 
-        // Add extra text only if scene === "1"
+        // Extra instruction for scene 1
         if (scene === "1") {
             finalPrompt += " ";
         }
 
-
-        const model = "amazon.titan-embed-text-v1";
+        // Set model for Amazon Titan Text
+        const model = "amazon.titan-text-express-v1";
 
         const command = new InvokeModelCommand({
             modelId: model,
             contentType: "application/json",
             accept: "application/json",
-            body: JSON.stringify({
-                prompt: finalPrompt,
-                max_tokens: 200,
-            }),
+            body: JSON.stringify({ inputText: finalPrompt }),
         });
 
         const response = await bedrockClient.send(command);
+
+        // Correctly decode response
         const responseData = JSON.parse(new TextDecoder().decode(response.body));
 
-        res.json({ response: responseData });
+        // Extract generated text (Titan returns results[0].outputText)
+        const resultText = responseData.results?.[0]?.outputText || "No response generated";
+
+        res.json({ response: resultText });
     } catch (error) {
         next(error);
     }
