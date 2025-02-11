@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 export default function Button({ variant = "primary", children, href, onClick, className = "", ...rest }) {
-  const baseClasses = "w-64 px-4 py-2 rounded font-semibold focus:outline-none focus:ring-2";
+  const baseClasses = "w-64 px-8 py-4 rounded-[50px] text-3xl font-bold text-gray-900 shadow-[4px_4px_0px_rgba(0,0,0,0.5)]";
   let variantClasses = "";
 
   if (variant === "primary") {
-    variantClasses = "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300";
+    variantClasses = "";
   } else if (variant === "secondary") {
     variantClasses = "bg-green-500 text-white hover:bg-green-600 focus:ring-green-300";
   } else if (variant === "tertiary") {
