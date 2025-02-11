@@ -23,8 +23,8 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
         let { title } = req.body;
 
-        const addTextBefore = "Before the prompt text";
-        const addTextAfter = "After the prompt text";
+        const addTextBefore = "Before the prompt text.";
+        const addTextAfter = "After the prompt text.";
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
@@ -49,7 +49,8 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             finalPrompt += " This is an additional instruction for scene 1.";
         }
 
-        const model = modelId || "amazon.titan-embed-text-v1"; // Default model
+
+        const model = "amazon.titan-embed-text-v1";
 
         const command = new InvokeModelCommand({
             modelId: model,
