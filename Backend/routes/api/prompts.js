@@ -35,9 +35,9 @@ const { ThrottlingException } = require("@aws-sdk/client-bedrock-runtime");
 
 router.post("/testdata", authMiddleware, async (req, res, next) => {
   try {
-      const { id, title, prompt, scene } = req.body;
+      const { title, prompt, scene } = req.body;
 
-      if (!id || !title || !prompt || !scene) {
+      if (!title || !prompt || !scene) {
           return res.status(400).json({ error: "All fields are required." });
       }
 
