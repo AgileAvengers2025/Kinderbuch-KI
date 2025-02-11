@@ -41,13 +41,25 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
 
         const { prompt, scene } = promptData;
 
-        // Base text
-        let finalPrompt = `Before the prompt text. ${prompt} After the prompt text.`.trim();
+        // Base instructions (always included)
+        let additionalInstructions = " ";
 
-        // Extra instruction for scene 1
+        // Extra instruction for scene 1 - NOW ADDED BEFORE the old text
         if (scene === "1") {
-            finalPrompt += " ";
+            additionalInstructions += `
+            Du erhältst insgesamt vier Prompts. Aus jedem einzelnen Prompt sollst du eine Teilgeschichte generieren. 
+            Diese Teilgeschichten müssen am Ende logisch zusammenhängen und gemeinsam eine kindgerechte, spannende und fantasievolle Story ergeben.
+            
+            Wichtige Vorgaben:
+            1. Jede Teilgeschichte soll das Maximum an Zeichen nutzen, um die Handlung detailreich und lebendig zu gestalten.
+            2. Die Sprache soll altersgerecht, leicht verständlich und unterhaltsam sein, damit Kinder Spaß am Lesen haben.
+            3. Achte darauf, dass jede Teilgeschichte einen klaren Handlungsbogen hat, aber offen genug bleibt, damit die nächste Teilgeschichte nahtlos anschließen kann.
+            4. Am Ende soll die gesamte Story einen logischen Abschluss finden. Bitte bestätige, dass du diese Struktur verstanden hast. Danach folgt der erste Teil der Geschichte.
+            `;
         }
+        
+        // Final prompt: Additional instructions come FIRST
+        let finalPrompt = `${additionalInstructions} ${prompt} Schreib die Geschichte auf Deutsch mit möglichst nah an 1000 Zeichen`.trim();
 
         // Set model for Amazon Titan Text
         const model = "amazon.titan-text-express-v1";
@@ -72,5 +84,6 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
         next(error);
     }
 });
+
 
 module.exports = router;
