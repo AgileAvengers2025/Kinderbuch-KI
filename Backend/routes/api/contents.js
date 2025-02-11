@@ -4,12 +4,15 @@ const Prompt = require("../../models/Prompt");
 const { BedrockRuntimeClient, InvokeModelCommand } = require("@aws-sdk/client-bedrock-runtime");
 const authMiddleware = require("../../middleware/authMiddleware");
 
+require("dotenv").config();
+
 // AWS Bedrock client config
 const bedrockClient = new BedrockRuntimeClient({
-    region: "eu-central-1",
+    region: process.env.AWS_REGION,
     credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        // sessionToken: process.env.AWS_SESSION_TOKEN,
     },
 });
 
