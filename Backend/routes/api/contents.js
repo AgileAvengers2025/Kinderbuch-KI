@@ -46,7 +46,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
 
         // Extra instruction for scene 1
         if (scene === "1") {
-            finalPrompt += " This is an additional instruction for scene 1.";
+            finalPrompt += " ";
         }
 
         // Set model for Amazon Titan Text
