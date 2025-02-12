@@ -21,9 +21,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${Roca2.className}`}>
       <body className="relative min-h-screen text-[#2c2c2c]">
         <div
-          className="bg-[url('/background.png')]  fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:rotate-90"
-          // style={{ backgroundImage: "url('/background.png')" }}
-        ></div>
+          className="bg-[url('/background.png')] fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:not-fixed md:rotate-90"
+        >{/* className="bg-[url('/background.png')] fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:not-fixed md:rotate-90"*/}</div>
         {children}
       </body>
     </html>

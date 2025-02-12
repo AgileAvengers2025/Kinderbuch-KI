@@ -4,13 +4,13 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
-     <div className="fixed left-0 top-1/3 -translate-y-1/2 block">
+     <div className="fixed left-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in">
         <Image
           src="/kids/boy-peek.png"
           alt="Kids illustration"
           width={140}
           height={400}
-          className="h-auto md:w-[250px] "
+          className=" md:w-[240px] xl:w-[390px] "
         />
       </div>
     <div className="flex flex-col min-h-screen justify-between  items-center text-center">

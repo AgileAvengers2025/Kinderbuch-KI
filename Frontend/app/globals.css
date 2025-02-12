@@ -8,3 +8,15 @@
   --peace: linear-gradient(190deg, #f7c898 15.21%, #def0f5 83.3%);
 }
 
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 1.5s ease-out forwards;
+}
