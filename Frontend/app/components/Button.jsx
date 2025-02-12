@@ -9,7 +9,7 @@ export default function Button({
   ...rest
 }) {
   const baseClasses =
-    "w-66 px-8 py-4 rounded-[1.7rem] text-xl shadow-[0_4px_0_0_rgba(0,0,0,1)]";
+    "w-66 px-4 py-2 rounded-[1.7rem] text-xl shadow-[0_4px_0_0_rgba(0,0,0,1)]";
   let variantClasses = "";
 
   if (variant === "primary") {

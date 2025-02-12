@@ -1,94 +1,101 @@
 "use client";
 import { useState } from "react";
+import Button from "../components/Button";
+import InputField from "../components/InputField";
 
 export default function Register() {
+  // Initialize form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  }
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await fetch("/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
-
-      const result = await res.json();
-      console.log("Registration result:", result);
-      // Handle success, e.g. navigate to dashboard or show a success message
+      const data = await res.json();
+      console.log("Registration result:", data);
     } catch (error) {
       console.error("Registration error:", error);
-      // Handle error
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded shadow">
-        <h1 className="mb-4 text-2xl font-bold text-gray-800">Register</h1>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name" className="block mb-1 text-gray-700">
-              Name
-            </label>
-            <input
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight text-gray-900">
+            Create your account
+          </h2>
+        </div>
+
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <InputField
+              label="Name"
               id="name"
               type="text"
-              placeholder="Your name"
+              required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Enter your name"
+              autoComplete="name"
             />
-          </div>
-          <div>
-            <label htmlFor="email" className="block mb-1 text-gray-700">
-              Email
-            </label>
-            <input
+
+            <InputField
+              label="Email address"
               id="email"
               type="email"
-              placeholder="Email address"
+              required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Enter your email"
+              autoComplete="email"
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="block mb-1 text-gray-700">
-              Password
-            </label>
-            <input
+
+            <InputField
+              label="Password"
               id="password"
               type="password"
-              placeholder="Password"
+              required
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Enter your password"
+              autoComplete="new-password"
             />
-          </div>
-          <button
-            type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring"
-          >
-            Register
-          </button>
-        </form>
-        <div className="mt-6">
-          <button className="w-full px-4 py-2 text-gray-800 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focus:ring">
-            Sign in with Google
-          </button>
+
+            <div className="font-black flex justify-center">
+              <Button type="submit" variant="secondary">
+                Register
+              </Button>
+            </div>
+          </form>
+
+          <p className="mt-10 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              Sign in here
+            </a>
+          </p>
         </div>
       </div>
     </div>

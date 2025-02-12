@@ -1,18 +1,40 @@
 import Button from "./components/Button";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className=" flex flex-col min-h-screen items-center justify-center text-center">
-      <div>
-        <h1 className="text-4xl font-bold">
-          Willkommen auf der Kinderbuch-KI Homepage
-        </h1>
-        <p className="mt-2 text-lg">
-          Erstelle personalisierte Geschichten für Kinder.
-        </p>
+    <>
+     <div className="fixed left-0 top-1/3 -translate-y-1/2 block">
+        <Image
+          src="/kids/boy-peek.png"
+          alt="Kids illustration"
+          width={140}
+          height={400}
+          className="h-auto md:w-[250px] "
+        />
       </div>
-      <div className="font-black grid grid-cols-1 gap-4 justify-items-center mt-auto mb-8">
-        <Button variant="primary">Register</Button>
+    <div className="flex flex-col min-h-screen justify-between  items-center text-center">
+      <div className="w-full px-4 sm:px-0">
+        <Image
+          src="/Kinderbuch.svg"
+          alt="Header illustration"
+          width={350}
+          height={200}
+          priority
+          className="m-8 w-[280px] sm:w-[350px] h-auto mx-auto mb-16"
+        />
+      </div>
+      <div className="mx-64"></div>
+    
+
+      <div className="text-3xl font-black max-w-[14rem] sm:max-w-none mx-auto">
+        where dreams are made
+      </div>
+
+      <div className="font-black grid grid-cols-1 gap-4 justify-items-center mb-8">
+        <Button variant="primary" href="/register">
+          Register
+        </Button>
         <Button variant="secondary" href="/login">
           Login
         </Button>
@@ -21,5 +43,6 @@ export default function Home() {
         </Button>
       </div>
     </div>
+    </>
   );
 }
