@@ -59,7 +59,10 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
         }
         
         // Final prompt: Additional instructions come FIRST
-        let finalPrompt = `${additionalInstructions} ${prompt} Schreib die Geschichte auf Deutsch mit möglichst nah an 1000 Zeichen`.trim();
+        let finalPrompt = `${additionalInstructions} ${prompt} 
+        Schreibe eine kurze Geschichte mit maximal 300 Wörtern auf Deutsch. 
+        Achte darauf, dass alle Sätze vollständig sind. 
+        Vermeide es, mitten in einem Satz oder Dialog aufzuhören.`.trim();
 
         // Set model for Amazon Titan Text
         const model = "amazon.titan-text-express-v1";
@@ -68,8 +71,16 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             modelId: model,
             contentType: "application/json",
             accept: "application/json",
-            body: JSON.stringify({ inputText: finalPrompt }),
+            body: JSON.stringify({
+                inputText: finalPrompt,
+                textGenerationConfig: {
+                    maxTokenCount: 300,
+                    temperature: 0.9,
+                    topP: 0.9,
+                }
+            })
         });
+        
 
         const response = await bedrockClient.send(command);
 
