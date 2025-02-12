@@ -30,3 +30,7 @@
 # 11.02
 
 -learning nextjs and doing frontend
+
+# 12.02
+
+-did login, register and improved landing page in frontend
