@@ -2,13 +2,15 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 
 require("dotenv").config();
+
 const db = process.env.MONGO_URI;
+
 describe('User Model Test', () => {
   beforeAll(async () => {
     await mongoose.connect( db , {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true,
+      //useCreateIndex: true,
     });
   });
 
