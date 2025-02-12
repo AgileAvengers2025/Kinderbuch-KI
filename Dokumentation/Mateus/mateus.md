@@ -14,3 +14,19 @@
 -Wireframes and prototyping 
 
 ![alt text](image-3.png)
+
+# 06/07.02
+
+![alt text](image-4.png)
+
+# 08.02
+
+-doing some frontend and doing design
+
+# 10.11
+
+--learning nextjs and doing frontend
+
+# 11.02
+
+-learning nextjs and doing frontend
