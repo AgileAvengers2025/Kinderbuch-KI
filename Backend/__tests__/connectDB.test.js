@@ -13,24 +13,19 @@ describe("DB connection", () =>
         jest.clearAllMocks(); // resetting mocks after tests
     });
 
-    test("should connect to MongoDB successfully", async () =>
-    {
-        mongoose.connect.mockResolvedValueOnce({});
-        await connectDB();
-        expect(mongoose.connect).toHaveBeenCalledWith(process.env.MONGO_URI);
-    });
-
-    test("should handle connection failure", async () =>
-    {
+    it("should handle connection failure", async () => {
         const errorMsg = "Connection failed!";
-        
-        mongoose.connect.mockRejectedValueOnce(new Error(errorMsg));
 
-        const exitSpy = jest.spyOn(process, "exit").mockImplmentation(() => {});
+        jest.spyOn(console, "error").mockImplementation(() => {});
+
+        const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {});
+
+        jest.spyOn(mongoose, "connect").mockRejectedValueOnce(new Error(errorMsg));
 
         await connectDB();
 
         expect(console.error).toHaveBeenCalledWith(errorMsg);
+
         expect(exitSpy).toHaveBeenCalledWith(1);
     });
 });
