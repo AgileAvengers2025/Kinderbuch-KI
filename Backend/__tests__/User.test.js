@@ -1,22 +1,22 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const { MongoMemoryServer } = require("mongodb-memory-server");
 
 require("dotenv").config();
 
-const db = process.env.MONGO_URI;
+let mongoServer;
+
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  await mongoose.connect(mongoServer.getUri(), { dbName: "demo" });
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
 
 describe('User Model Test', () => {
-  beforeAll(async () => {
-    await mongoose.connect( db , {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      //useCreateIndex: true,
-    });
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
 
   it('should create & save a user successfully', async () => {
     const validUser = new User({
