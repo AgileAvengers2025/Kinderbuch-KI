@@ -59,7 +59,7 @@ router.post("/", async (req, res, next) => {
 
         const newUser = new User({
             email: sanitizedEmail,
-            passwordHash: hashedPassword,
+            passwordHash,
             displayName: displayName || "",
             kidsNames: kidsNames || [],
         });
