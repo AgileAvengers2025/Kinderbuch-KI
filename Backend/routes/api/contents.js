@@ -59,7 +59,8 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
         }
         if (scene > 1) {
             additionalInstructions += `
-            Die Ausgabe sollte eine Fortsetzung von ${beforeOutput} sein und mit dieser etwas Zusammenhängen.
+            Die Ausgabe sollte eine Fortsetzung von ${beforeOutput} sein. Es sollen keine ganzen Sätze wiederholt werden.
+
             `;
         }
         
