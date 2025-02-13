@@ -24,7 +24,7 @@ router.get("/", authMiddleware, (req, res) => {
 // Example route to generate text
 router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
-        let { title } = req.body;
+        let { title, beforeOutput } = req.body;
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
@@ -57,12 +57,19 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             4. Am Ende soll die gesamte Story einen logischen Abschluss finden. Bitte bestätige, dass du diese Struktur verstanden hast. Danach folgt der erste Teil der Geschichte.
             `;
         }
+        if (scene > 1) {
+            additionalInstructions += `
+            Die Ausgabe sollte eine Fortsetzung von ${beforeOutput} sein und mit dieser etwas Zusammenhängen.
+            `;
+        }
         
         // Final prompt: Additional instructions come FIRST
-        let finalPrompt = `${additionalInstructions} ${prompt} 
+        let finalPrompt = `${additionalInstructions} 
+        Benutze dies als Inspiration für die Geschichte ${prompt}.
         Schreibe eine kurze Geschichte mit maximal 300 Wörtern auf Deutsch. 
         Achte darauf, dass alle Sätze vollständig sind. 
-        Vermeide es, mitten in einem Satz oder Dialog aufzuhören.`.trim();
+        Vermeide es, mitten in einem Satz oder Dialog aufzuhören.
+        `.trim();
 
         // Set model for Amazon Titan Text
         const model = "amazon.titan-text-express-v1";
