@@ -15,7 +15,6 @@ describe('User Model Test', () => {
   });
 
   afterAll(async () => {
-    await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
   });
 
