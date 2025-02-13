@@ -34,3 +34,7 @@
 # 12.02
 
 -did login, register and improved landing page in frontend
+
+#13.02
+
+-Did the dashboard page, login is working, registering a new user too. First steps of the generator app and more
