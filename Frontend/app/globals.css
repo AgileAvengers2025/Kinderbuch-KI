@@ -20,3 +20,24 @@
 .slide-in {
   animation: slideIn 1.5s ease-out forwards;
 }
+
+/* @keyframes moveClouds {
+  from {
+    transform: translateX(-200px);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+.cloud {
+  position: absolute;
+  top: 20%;
+  left: -200px;
+  width: 200px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 100px;
+  box-shadow: 50px 25px 50px rgba(255, 255, 255, 0.5);
+  animation: moveClouds 20s linear infinite;
+} */
