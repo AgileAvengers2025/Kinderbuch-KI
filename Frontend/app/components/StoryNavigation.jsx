@@ -12,7 +12,7 @@ export default function StoryNavigation({
       <Button
         variant="primary"
         onClick={onPrevious}
-        className="p-2 w-12 h-12 flex items-center justify-center"
+        className="flex items-center justify-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

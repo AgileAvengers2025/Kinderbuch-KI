@@ -92,8 +92,9 @@ export default function Generate() {
             {["Adventure", "Fantasy", "Educational", "Bedtime"].map((theme) => (
               <Button
                 key={theme}
-                variant={selections.theme === theme ? "secondary" : "primary"}
+                variant={selections.theme === theme ? "quaternary" : "primary"}
                 onClick={() => handleSelection(1, theme)}
+                className="w-66"
               >
                 {theme}
               </Button>
@@ -108,9 +109,10 @@ export default function Generate() {
                 <Button
                   key={setting}
                   variant={
-                    selections.setting === setting ? "secondary" : "primary"
+                    selections.setting === setting ? "quaternary" : "primary"
                   }
                   onClick={() => handleSelection(2, setting)}
+                  className="w-66"
                 >
                   {setting}
                 </Button>
@@ -125,9 +127,10 @@ export default function Generate() {
               <Button
                 key={character}
                 variant={
-                  selections.character === character ? "secondary" : "primary"
+                  selections.character === character ? "quaternary" : "primary"
                 }
                 onClick={() => handleSelection(3, character)}
+                className="w-66"
               >
                 {character}
               </Button>
@@ -140,8 +143,11 @@ export default function Generate() {
             {["Short", "Medium", "Long"].map((length) => (
               <Button
                 key={length}
-                variant={selections.length === length ? "secondary" : "primary"}
+                variant={
+                  selections.length === length ? "quaternary" : "primary"
+                }
                 onClick={() => handleSelection(4, length)}
+                className="w-66"
               >
                 {length} Story
               </Button>
