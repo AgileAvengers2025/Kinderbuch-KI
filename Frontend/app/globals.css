@@ -3,9 +3,12 @@
 :root {
   --adventure: linear-gradient(to bottom left, #ed443a 28.13%, #fca43c 84.09%);
   --curiosity: linear-gradient(to bottom right, #a4eaef 17.06%, #9c8cfa 85.11%);
-  --calm: linear-gradient(to bottom right, #dcc8e9 13.82%, #f8ceee 82.83%);
+  --calm: linear-gradient(to top, #dcc8e9 13.82%, #f8ceee 82.83%);
 
   --peace: linear-gradient(190deg, #f7c898 15.21%, #def0f5 83.3%);
+}
+.slide-in {
+  animation: slideIn 1.5s ease-out forwards;
 }
 
 @keyframes slideIn {
@@ -17,27 +20,38 @@
   }
 }
 
-.slide-in {
-  animation: slideIn 1.5s ease-out forwards;
-}
-
-/* @keyframes moveClouds {
-  from {
-    transform: translateX(-200px);
+@keyframes sparkle {
+  0% {
+    background-position: 0% 50%;
   }
-  to {
-    transform: translateX(100vw);
+  100% {
+    background-position: 200% 50%;
   }
 }
 
-.cloud {
-  position: absolute;
-  top: 20%;
-  left: -200px;
-  width: 200px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 100px;
-  box-shadow: 50px 25px 50px rgba(255, 255, 255, 0.5);
-  animation: moveClouds 20s linear infinite;
-} */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hover-gradient:hover {
+  animation: gradientFlow 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+
+.hover-sparkle:hover {
+  animation: sparkle 4s linear infinite;
+  background-size: 200% auto;
+}
+
+.debug {
+  outline: 2px solid red;
+}

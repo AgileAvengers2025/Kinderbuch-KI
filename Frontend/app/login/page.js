@@ -2,11 +2,54 @@
 import { useState } from "react";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+
+// Login function outside the component
+const loginUser = async (userData) => {
+  const response = await fetch("http://localhost:8082/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: userData.email,
+      passwordHash: userData.password,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Login failed");
+  }
+
+  return response.json();
+};
 
 export default function Login() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      toast.success("Login successful! Redirecting...");
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", data.accessToken);
+      }
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+    },
+    onError: (error) => {
+      toast.error(
+        error.message || "Login failed. Please check your credentials."
+      );
+    },
   });
 
   function handleChange(e) {
@@ -16,19 +59,9 @@ export default function Login() {
     });
   }
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const result = await res.json();
-      console.log("Login result:", result);
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+    mutation.mutate(formData);
   }
 
   return (
@@ -85,8 +118,12 @@ export default function Login() {
             </div>
 
             <div className="font-black">
-              <Button type="submit" variant="secondary">
-                Sign in
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Signing in..." : "Sign in"}
               </Button>
             </div>
           </form>
