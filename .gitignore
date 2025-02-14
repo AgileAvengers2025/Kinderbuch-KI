@@ -1,5 +1,11 @@
+-Remove .gitignore in Front- and Backend 
+-Let just one in the root folder
+
+use this template: 
+
 /node_modules
 /Frontend/node_modules
+/Backend/node_modules
 .env
 /.git
 
@@ -90,6 +96,7 @@ web_modules/
 
 # Next.js build output
 .next
+**/.next
 out
 
 # Nuxt.js build / generate output
