@@ -38,3 +38,7 @@
 #13.02
 
 -Did the dashboard page, login is working, registering a new user too. First steps of the generator app and more
+
+#14.02
+
+-generator page in progress
