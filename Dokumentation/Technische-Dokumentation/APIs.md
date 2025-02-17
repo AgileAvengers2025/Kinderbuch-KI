@@ -796,3 +796,93 @@ Authorization: Bearer <YOUR_ACCESS_TOKEN>
 
 - **500 Internal Server Error**: 
     - Returned when there is an issue on the server side.
+
+---
+
+# API Documentation - /api/contents/
+
+## Base URL
+`/api/contents/`
+
+## Authentication
+All routes require authentication using the `authMiddleware` middleware. The user must be authenticated to access these endpoints.
+
+---
+
+## **Test Route**
+### `GET /api/contents/`
+#### Description
+This endpoint is used to test the API connection. It simply returns a welcome message with the authenticated user's name.
+
+#### Headers
+| Key          | Value Type | Required | Description                 |
+|-------------|------------|----------|-----------------------------|
+| Authorization | Bearer Token | Yes      | The user's authentication token. |
+
+#### Response
+##### **Success Response (200)**
+```json
+"Hello, this is the /api/contents/ route for {user.name}"
+```
+
+##### **Error Responses**
+- **401 Unauthorized** – If the user is not authenticated.
+
+---
+
+## **Generate Story Content**
+### `POST /api/contents/generate`
+#### Description
+This endpoint generates a continuation of a children's story based on a stored prompt retrieved by title and the previous output. It uses AWS Bedrock's Titan model to generate the content.
+
+#### Headers
+| Key          | Value Type | Required | Description                 |
+|-------------|------------|----------|-----------------------------|
+| Authorization | Bearer Token | Yes      | The user's authentication token. |
+
+#### Request Body
+| Key   | Value Type | Required | Description |
+|-------|------------|----------|-------------|
+| title | String | Yes | Title of the story prompt to fetch from the database. |
+| beforeOutput | String | No | Previous output of the story to maintain continuity. |
+
+##### **Example Request**
+```json
+{
+    "title": "Der kleine Drache",
+    "beforeOutput": "Der kleine Drache betrat vorsichtig die dunkle Höhle..."
+}
+```
+
+#### Response
+##### **Success Response (200)**
+```json
+{
+    "response": "Der kleine Drache setzte vorsichtig einen Schritt vor den anderen, als plötzlich ein leuchtendes Licht erschien..."
+}
+```
+
+##### **Error Responses**
+- **400 Bad Request** – If the `title` field is missing.
+```json
+{
+    "error": "Title is required"
+}
+```
+- **404 Not Found** – If the specified title is not found in the database.
+```json
+{
+    "error": "Prompt not found"
+}
+```
+- **401 Unauthorized** – If the user is not authenticated.
+- **500 Internal Server Error** – If an unexpected error occurs during text generation.
+
+#### Processing Details
+1. The input `title` is validated and used to retrieve the corresponding prompt and scene number from the database.
+2. A structured prompt is created based on whether it is the first scene or a continuation.
+3. The AWS Bedrock Titan model processes the prompt with specific parameters:
+   - **Max Tokens:** 500
+   - **Temperature:** 0.9
+   - **Top P:** 0.9
+4. The generated response is extracted and returned to the user.

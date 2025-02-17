@@ -21,62 +21,83 @@ router.get("/", authMiddleware, (req, res) => {
     res.send(`Hello, this is the /api/contents/ route for ${req.user.name}`);
 });
 
+// Example route to generate text
 router.post("/generate", authMiddleware, async (req, res, next) => {
     try {
-        let { scene1, scene2, scene3, scene4 } = req.body;
+        let { title, beforeOutput } = req.body;
 
-        // Check for required scenes
-        if (!scene1 || !scene2 || !scene3 || !scene4) {
-            return res.status(400).json({ error: "All scenes are required" });
+        if (!title) {
+            return res.status(400).json({ error: "Title is required" });
         }
 
-        // Trim scene values to remove extra spaces
-        scene1 = scene1.trim();
-        scene2 = scene2.trim();
-        scene3 = scene3.trim();
-        scene4 = scene4.trim();
+        title = title.trim();
+
+        // Fetch prompt from the database using the title
+        const promptData = await Prompt.findOne({ title });
+
+        if (!promptData) {
+            return res.status(404).json({ error: "Prompt not found" });
+        }
+
+        const { prompt, scene } = promptData;
 
         // Constructing the prompt for text generation
         let additionalInstructions = " ";
 
         // Scene 1: Starting the story
-        additionalInstructions += `
-        Du wirst eine fortlaufende Kindergeschichte in vier Teilen erstellen. 
-        Jeder Abschnitt soll detailreich, lebendig und kindgerecht sein. 
+        if (scene === "1") {
+            additionalInstructions += `
+            Du wirst eine fortlaufende Kindergeschichte in vier Teilen erstellen. 
+            Jeder Abschnitt soll detailreich, lebendig und kindgerecht sein. 
+        
+            **Vorgaben für jeden Teil:**
+            - Nutze das Maximum an Zeichen für eine spannende Handlung.
+            - Verwende einfache, altersgerechte Sprache mit fantasievollen Beschreibungen.
+            - Jeder Abschnitt soll eine abgeschlossene Mini-Handlung haben, aber die Gesamtgeschichte fortführen.
+            - Stelle sicher, dass die Geschichte am Ende eine logische und zufriedenstellende Auflösung hat.
+            - Antwort ohne Meta-Beschreibungen oder Erklärungen. Nur die Geschichte selbst.
+            `;
 
-        **Vorgaben für jeden Teil:**
-        - Nutze das Maximum an Zeichen für eine spannende Handlung.
-        - Verwende einfache, altersgerechte Sprache mit fantasievollen Beschreibungen.
-        - Jeder Abschnitt soll eine abgeschlossene Mini-Handlung haben, aber die Gesamtgeschichte fortführen.
-        - Stelle sicher, dass die Geschichte am Ende eine logische und zufriedenstellende Auflösung hat.
-        - Antwort ohne Meta-Beschreibungen oder Erklärungen. Nur die Geschichte selbst.
-        `;
+            additionalInstructions += `
+            **Inspiration für die erste Szene:**  
+            "${prompt}"
+            `;
+        }
 
-        // Adding each scene as part of the prompt
-        additionalInstructions += `
-        **Szene 1:**
-        "${scene1}"
-
-        **Szene 2:**
-        "${scene2}"
-
-        **Szene 3:**
-        "${scene3}"
-
-        **Szene 4:**
-        "${scene4}"
-        `;
-
-        // Final prompt with additional instructions
+        // Scene > 1: Continuation of the story
+        if (scene > 1) {
+            additionalInstructions += `
+            Dies ist eine Fortsetzung der Geschichte. **Achte auf den bisherigen Verlauf und den Erzählstil.**  
+            **Vorgaben für den nächsten Abschnitt:**  
+            - Die Handlung soll **nahtlos** an die vorherige Ausgabe anschließen.  
+            - **Keine Wiederholungen** von ganzen Sätzen oder Dialogen aus vorherigen Teilen.  
+            - Antwort ohne Meta-Beschreibungen oder Erklärungen. Nur die Geschichte selbst.
+            - Entwickle Charaktere weiter und führe neue Details ein.  
+            - Beende den Abschnitt mit einem leichten Cliffhanger oder einer offenen Frage.  
+        
+            Vorherige Ausgabe zur Orientierung:
+            "${beforeOutput}"
+            `;
+        }
+        
+        // Final prompt with `prompt` and additional instructions
         let finalPrompt = `
         **Wichtige Anweisungen:**  
         - Schreibe die Fortsetzung der Geschichte mit einem **positiven**, **hoffnungsvollen** oder **abenteuerlichen** Ton.  
         - Vermeide düstere, tragische Wendungen. Stattdessen fokussiere dich auf den **Überlebenswillen**, **Zusammenhalt** oder **Magie**.  
         - **Maximal 300 Wörter** und keine Wiederholungen aus der vorherigen Geschichte.   
         - Die Geschichte soll einen **magischen** oder **hoffnungsvollen** Abschluss finden, der den Leser ermutigt.  
+        
+        ---
+        
+        **Bisherige Geschichte:**  
+        "${beforeOutput}"
+        
+        **Inspiration für die Fortsetzung (Prompt):**  
+        "${prompt}"
 
         **Deine Aufgabe:**  
-        Schreibe eine Fortsetzung, in der die Charaktere **trotz der Herausforderungen** Hoffnung finden oder **eine unerwartete Hilfe** bekommen. Die Fortsetzung sollte kreative Lösungen, magische Ereignisse oder kleine Freuden im Chaos zeigen. Achte darauf, dass die Atmosphäre positiv und hoffnungsvoll bleibt. 
+        Schreibe eine Fortsetzung, in der die Charaktere **trotz der Herausforderungen** Hoffnung finden oder **eine unerwartete Hilfe** bekommen. Die Fortsetzung sollte kreative Lösungen, magische Ereignisse oder kleine Freuden im Chaos zeigen. Achte darauf, dass die Atmosphäre positiv und hoffnungsvoll bleibt.
         Schreibe ohne Meta-Beschreibungen. Keine Überschrift wie 'Fortsetzung'. Beginne direkt mit der Geschichte.
         `.trim();
 
