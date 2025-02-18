@@ -5,32 +5,8 @@ import Button from "../components/Button";
 import StoryNavigation from "../components/StoryNavigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
-const token = process.env.NEXT_PUBLIC_JWT_TOKEN;
-async function fetchPrompts(scene) {
-  const res = await fetch(`http://localhost:8082/api/prompts?scene=${scene}`, {
-    headers: {
-      Authorization: `Bearer ${token}
-`,
-    },
-  });
-  if (!res.ok) throw new Error("Failed to fetch prompts");
-  return res.json();
-}
-
-async function generateStory({ title, beforeOutput }) {
-  const res = await fetch("http://localhost:8082/api/contents/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}
-`,
-    },
-    body: JSON.stringify({ title, beforeOutput }),
-  });
-  if (!res.ok) throw new Error("Failed to generate story");
-  return res.json();
-}
+import TextBox from "../components/TextBox";
+import { fetchPrompts, generateStory } from "../api/generate/generate";
 
 export default function GeneratePage() {
   const router = useRouter();
@@ -64,9 +40,22 @@ export default function GeneratePage() {
   }, [currentScene]);
 
   const handleSelect = (title) => {
-    setSelectedTitles((prev) => [...prev, title]);
+    setSelectedTitles((prev) => {
+      const newTitles = [...prev];
+      newTitles[currentScene - 1] = title; // overwrite the selection for the current scene
+      return newTitles;
+    });
+  };
+
+  const handleNext = () => {
+    const currentTitle = selectedTitles[selectedTitles.length - 1];
+    if (!currentTitle) {
+      toast.error("Please select a prompt first");
+      return;
+    }
+    // Trigger your mutation here only
     mutation.mutate({
-      title,
+      title: currentTitle,
       beforeOutput: storyParts[storyParts.length - 1] || "",
     });
   };
@@ -82,27 +71,44 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen px-4">
-      {/* Story output at the top, scrollable */}
-      <div className="w-full max-w-xl h-44 overflow-auto border rounded p-4 mb-4">
-        {storyParts.map((part, idx) => (
-          <p key={idx} className="mb-2">
-            <strong>Scene {idx + 1} Output:</strong> {part}
-          </p>
-        ))}
-      </div>
+    <div className="flex mb-8 flex-col items-center min-h-screen px-4">
+      {storyParts.length > 0 ? (
+        <TextBox
+          variant={
+            currentScene === 1
+              ? "adventure"
+              : currentScene === 2
+              ? "curiosity"
+              : currentScene === 3
+              ? "calm"
+              : "adventure"
+          }
+        >
+          {storyParts.map((part, idx) => (
+            <p key={idx} className="mb-2">
+              {part}
+            </p>
+          ))}
+        </TextBox>
+      ) : (
+        <div className="mx-auto text-center my-8  ">
+          <div className="font-black text-4xl mb-8 ">Generate</div>
+          <h1 className="text-3xl max-w-75 font-black mb-4">
+            Select one of these prompts to continue
+          </h1>
+        </div>
+      )}
 
       <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
       {/* Show buttons for the prompts */}
-      <div className="flex flex-col gap-2 mb-4">
+      <div className="flex flex-col gap-6 mb-4">
         {options.map((item) => {
-          const isSelected = selectedTitles.includes(item.title);
+          const isSelected = selectedTitles[currentScene - 1] === item.title;
           return (
             <Button
               key={item._id}
               variant={isSelected ? "quaternary" : "primary"}
               onClick={() => handleSelect(item.title)}
-              disabled={mutation.isPending}
             >
               {item.title}
             </Button>
@@ -112,11 +118,9 @@ export default function GeneratePage() {
 
       <StoryNavigation
         currentStep={currentScene}
-        onNext={() => {
-          /* Next triggered by onSuccess */
-        }}
+        onNext={handleNext}
         onPrevious={handlePrevious}
-        disabled={mutation.isPending}
+        disabled={mutation.isPending || !selectedTitles[currentScene - 1]}
       />
     </div>
   );

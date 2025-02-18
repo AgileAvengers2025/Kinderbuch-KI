@@ -51,7 +51,7 @@ router.post("/login", async (req, res, next) => {
         }
 
         const payload = { id: user.id, name: user.displayName };
-        const accessToken = jwt.sign(payload, SECRET, { expiresIn: "2h" });
+        const accessToken = jwt.sign(payload, SECRET, { expiresIn: "8h" });
         const refreshToken = jwt.sign(payload, SECRET, { expiresIn: "7d" });
 
         refreshTokens.add(refreshToken);
