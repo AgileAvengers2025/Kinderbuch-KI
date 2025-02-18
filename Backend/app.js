@@ -2,7 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
 const cors = require("cors");
-const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 require("dotenv").config();
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
@@ -32,9 +32,12 @@ app.use(
 // CORS middleware
 app.use(cors({ origin: true, credentials: true }));
 
-// Body-parser middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Express internal parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware to parse cookies
+app.use(cookieParser());
 
 // Use logging middleware
 app.use(requestLogger);
