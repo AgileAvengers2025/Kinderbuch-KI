@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import TextBox from "../components/TextBox";
 import { fetchPrompts, generateStory, saveStory } from "../api/generate/generate";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function GeneratePage() {
   const router = useRouter();
@@ -90,6 +91,10 @@ export default function GeneratePage() {
     setSelectedTitles((prev) => prev.slice(0, -1));
     setStoryParts((prev) => prev.slice(0, -1));
   };
+
+  if (mutation.isPending || saveMutation.isPending) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="flex mb-8 flex-col items-center min-h-screen px-4">
