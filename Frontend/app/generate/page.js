@@ -6,9 +6,7 @@ import StoryNavigation from "../components/StoryNavigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UgMiIsImlhdCI6MTczOTg2NjY4MCwiZXhwIjoxNzQwMjk4NjgwfQ.j77Ikj_1WJf0ZXyj9zMRSlZSh1ikKJZI5Ygfcrc-Z9k";
-
+const token = process.env.NEXT_PUBLIC_JWT_TOKEN;
 async function fetchPrompts(scene) {
   const res = await fetch(`http://localhost:8082/api/prompts?scene=${scene}`, {
     headers: {
