@@ -8,4 +8,4 @@ const data = [
   { "id": 7, "prompt": "Whimsical wonders in magical world" }
 ];
 
-export default data;
+module.exports = data;
