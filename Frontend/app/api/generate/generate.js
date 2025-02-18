@@ -22,3 +22,20 @@ export async function generateStory({ title, beforeOutput }) {
   if (!res.ok) throw new Error("Failed to generate story");
   return res.json();
 }
+
+export async function saveStory({ userId, title, content }) {
+    const res = await fetch("http://localhost:8082/api/stories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        userId: userId || 'anonymous', // temporary until auth is implemented
+        title: title,
+        content: content
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to save story");
+    return res.json();
+  }
