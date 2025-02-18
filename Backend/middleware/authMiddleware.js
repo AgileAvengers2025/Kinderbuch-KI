@@ -8,7 +8,8 @@ const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const BEARER_PREFIX = "Bearer ";
 
-    if (!authHeader || !authHeader.startsWith(BEARER_PREFIX)) {
+    if (!authHeader?.startsWith(BEARER_PREFIX)) {
+
         return res.status(401).json({ message: "Unauthorized - No token provided" });
     }
 
