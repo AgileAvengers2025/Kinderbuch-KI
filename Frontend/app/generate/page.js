@@ -1,164 +1,120 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../components/Button";
 import StoryNavigation from "../components/StoryNavigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-// API function
-const generateStory = async (storyParams) => {
-  const response = await fetch("http://localhost:8082/api/stories", {
+const token = process.env.NEXT_PUBLIC_JWT_TOKEN;
+async function fetchPrompts(scene) {
+  const res = await fetch(`http://localhost:8082/api/prompts?scene=${scene}`, {
+    headers: {
+      Authorization: `Bearer ${token}
+`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch prompts");
+  return res.json();
+}
+
+async function generateStory({ title, beforeOutput }) {
+  const res = await fetch("http://localhost:8082/api/contents/generate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      // Add authorization if needed
-      // "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}
+`,
     },
-    body: JSON.stringify(storyParams),
+    body: JSON.stringify({ title, beforeOutput }),
   });
+  if (!res.ok) throw new Error("Failed to generate story");
+  return res.json();
+}
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to generate story");
-  }
-
-  return response.json();
-};
-
-export default function Generate() {
+export default function GeneratePage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selections, setSelections] = useState({
-    theme: "",
-    setting: "",
-    character: "",
-    length: "",
-  });
+  const [currentScene, setCurrentScene] = useState(1);
+  const [options, setOptions] = useState([]);
+  const [selectedTitles, setSelectedTitles] = useState([]);
+  const [storyParts, setStoryParts] = useState([]);
 
   const mutation = useMutation({
     mutationFn: generateStory,
     onSuccess: (data) => {
-      toast.success("Story generated successfully!");
-      // Navigate to the story view page with the generated story
-      router.push(`/stories/${data.id}`);
+      setStoryParts((prev) => [...prev, data.response]);
+      if (currentScene === 4) {
+        toast.success("Story complete!");
+      } else {
+        setCurrentScene((prev) => prev + 1);
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Failed to generate story");
     },
   });
 
-  const handleSelection = (step, value) => {
-    setSelections((prev) => ({
-      ...prev,
-      [step === 1
-        ? "theme"
-        : step === 2
-        ? "setting"
-        : step === 3
-        ? "character"
-        : "length"]: value,
-    }));
-  };
+  useEffect(() => {
+    fetchPrompts(currentScene)
+      .then((data) => {
+        const randomFour = data.sort(() => 0.5 - Math.random()).slice(0, 4);
+        setOptions(randomFour);
+      })
+      .catch((err) => toast.error(err.toString()));
+  }, [currentScene]);
 
-  const handleNext = () => {
-    if (currentStep === 4) {
-      mutation.mutate(selections);
-      return;
-    }
-    setCurrentStep((prev) => prev + 1);
+  const handleSelect = (title) => {
+    setSelectedTitles((prev) => [...prev, title]);
+    mutation.mutate({
+      title,
+      beforeOutput: storyParts[storyParts.length - 1] || "",
+    });
   };
 
   const handlePrevious = () => {
-    if (currentStep === 1) {
+    if (currentScene === 1) {
       router.back();
       return;
     }
-    setCurrentStep((prev) => Math.max(1, prev - 1));
+    setCurrentScene((prev) => Math.max(1, prev - 1));
+    setSelectedTitles((prev) => prev.slice(0, -1));
+    setStoryParts((prev) => prev.slice(0, -1));
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4">
-      <h1 className="text-3xl font-black mb-8">
-        {currentStep === 1 && "Select something"}
-        {currentStep === 2 && "Select again"}
-        {currentStep === 3 && "Pick more"}
-        {currentStep === 4 && "Final touches"}
-      </h1>
+    <div className="flex flex-col items-center min-h-screen px-4">
+      {/* Story output at the top, scrollable */}
+      <div className="w-full max-w-xl h-44 overflow-auto border rounded p-4 mb-4">
+        {storyParts.map((part, idx) => (
+          <p key={idx} className="mb-2">
+            <strong>Scene {idx + 1} Output:</strong> {part}
+          </p>
+        ))}
+      </div>
 
-      <div className="flex flex-col gap-4 items-center font-bold w-full max-w-md mx-auto">
-        {currentStep === 1 && (
-          <>
-            {["Adventure", "Fantasy", "Educational", "Bedtime"].map((theme) => (
-              <Button
-                key={theme}
-                variant={selections.theme === theme ? "quaternary" : "primary"}
-                onClick={() => handleSelection(1, theme)}
-                className="w-66"
-              >
-                {theme}
-              </Button>
-            ))}
-          </>
-        )}
-
-        {currentStep === 2 && (
-          <>
-            {["In Space", "Underwater", "In a Castle", "In a Forest"].map(
-              (setting) => (
-                <Button
-                  key={setting}
-                  variant={
-                    selections.setting === setting ? "quaternary" : "primary"
-                  }
-                  onClick={() => handleSelection(2, setting)}
-                  className="w-66"
-                >
-                  {setting}
-                </Button>
-              )
-            )}
-          </>
-        )}
-
-        {currentStep === 3 && (
-          <>
-            {["Princess", "Dragon", "Wizard", "Knight"].map((character) => (
-              <Button
-                key={character}
-                variant={
-                  selections.character === character ? "quaternary" : "primary"
-                }
-                onClick={() => handleSelection(3, character)}
-                className="w-66"
-              >
-                {character}
-              </Button>
-            ))}
-          </>
-        )}
-
-        {currentStep === 4 && (
-          <>
-            {["Short", "Medium", "Long"].map((length) => (
-              <Button
-                key={length}
-                variant={
-                  selections.length === length ? "quaternary" : "primary"
-                }
-                onClick={() => handleSelection(4, length)}
-                className="w-66"
-              >
-                {length} Story
-              </Button>
-            ))}
-          </>
-        )}
+      <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
+      {/* Show buttons for the prompts */}
+      <div className="flex flex-col gap-2 mb-4">
+        {options.map((item) => {
+          const isSelected = selectedTitles.includes(item.title);
+          return (
+            <Button
+              key={item._id}
+              variant={isSelected ? "quaternary" : "primary"}
+              onClick={() => handleSelect(item.title)}
+              disabled={mutation.isPending}
+            >
+              {item.title}
+            </Button>
+          );
+        })}
       </div>
 
       <StoryNavigation
-        currentStep={currentStep}
-        onNext={handleNext}
+        currentStep={currentScene}
+        onNext={() => {
+          /* Next triggered by onSuccess */
+        }}
         onPrevious={handlePrevious}
         disabled={mutation.isPending}
       />
