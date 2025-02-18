@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "jest": "jest"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.66.0",
@@ -19,9 +19,13 @@
     "react-hot-toast": "^2.5.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.0.6",
+    "@testing-library/react": "^16.2.0",
     "autoprefixer": "^10.4.20",
+    "babel-jest": "^29.7.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8.5.2",
