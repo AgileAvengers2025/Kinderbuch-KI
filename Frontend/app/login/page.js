@@ -5,26 +5,20 @@ import InputField from "../components/InputField";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import api from "../utils/api";
 
 // Login function outside the component
 const loginUser = async (userData) => {
-  const response = await fetch("http://localhost:8082/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: userData.email,
-      passwordHash: userData.password,
-    }),
+  const response = await api.post("/login", {
+    email: userData.email,
+    password: userData.password,
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Login failed");
+  if (!response.data) {
+    throw new Error("Login failed");
   }
 
-  return response.json();
+  return response.data;
 };
 
 export default function Login() {
@@ -38,17 +32,17 @@ export default function Login() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       toast.success("Login successful! Redirecting...");
+
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("token", data.accessToken); // Store access token
       }
+
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
     },
     onError: (error) => {
-      toast.error(
-        error.message || "Login failed. Please check your credentials."
-      );
+      toast.error(error.message || "Login failed. Please check your credentials.");
     },
   });
 
@@ -134,7 +128,7 @@ export default function Login() {
               href="/register"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              register right here
+              Register right here
             </a>
           </p>
         </div>

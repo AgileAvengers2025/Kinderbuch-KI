@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 const authMiddleware = require("../../middleware/authMiddleware");
 const { logger } = require("../../middleware/logging");
+const { ACCESS_TOKEN_SECRET } = process.env;
 
 // Get all users
 router.get("/", authMiddleware, async (req, res, next) => {
@@ -36,16 +39,16 @@ router.get("/:id", authMiddleware, async (req, res, next) => {
 // Create a new user
 router.post("/", async (req, res, next) => {
     try {
-        const { email, passwordHash, displayName, kidsNames } = req.body;
+        const { email, password, displayName, kidsNames } = req.body;  // Accept password (not passwordHash) from frontend
 
-        if (!email || !passwordHash) {
+        if (!email || !password) {
             logger.warn("User creation failed - Missing fields");
             return res.status(400).json({ error: "Email and password are required." });
         }
 
         const sanitizedEmail = String(email).trim().toLowerCase();
-
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
         if (!emailRegex.test(sanitizedEmail)) {
             logger.warn(`User creation failed - Invalid email format: ${sanitizedEmail}`);
             return res.status(400).json({ error: "Invalid email format." });
@@ -57,9 +60,12 @@ router.post("/", async (req, res, next) => {
             return res.status(400).json({ error: "User already exists." });
         }
 
+        // Hash the password before saving it to the database
+        const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password with 10 rounds of salt
+
         const newUser = new User({
             email: sanitizedEmail,
-            passwordHash,
+            passwordHash: hashedPassword,  // Save the hashed password
             displayName: displayName || "",
             kidsNames: kidsNames || [],
         });
@@ -67,7 +73,16 @@ router.post("/", async (req, res, next) => {
         await newUser.save();
 
         logger.info(`New user created: ${sanitizedEmail}`);
-        res.status(201).json(newUser);
+
+        // Generate access token after successful user creation
+        const payload = { id: newUser._id, name: newUser.displayName };
+        const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+
+        res.status(201).json({
+            message: "User registered successfully",
+            accessToken,
+            user: newUser,  // Optionally, you can return the user as well
+        });
     } catch (error) {
         logger.error(`User creation error: ${error.message}`);
         next(error);
