@@ -1,16 +1,17 @@
-const express = require('express');
-const router = express.Router();
+const express = require("express");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middleware/authMiddleware");
 const { logger } = require("../middleware/logging");
 const User = require("../models/User");
+const RefreshToken = require("../models/RefreshToken");
 
 require("dotenv").config();
-const SECRET = process.env.SECRET;
+const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-const refreshTokens = new Set();
+const router = express.Router();
 
-// Test Route
+// Protected Test Route
 router.get("/", authMiddleware, (req, res, next) => {
     try {
         logger.info(`Protected route accessed by ${req.user.name}`);
@@ -20,83 +21,87 @@ router.get("/", authMiddleware, (req, res, next) => {
     }
 });
 
-// Login route
+// Login Route
 router.post("/login", async (req, res, next) => {
     try {
         const { email, passwordHash } = req.body;
-
         if (!email || !passwordHash) {
-            logger.error("Login failed - Missing email or password.");
             return res.status(400).json({ error: "Email and hashed password are required." });
         }
 
-        const sanitizedEmail = String(email).trim().toLowerCase();
-
-        // Regex to check that input is an email
+        const sanitizedEmail = email.trim().toLowerCase();
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(sanitizedEmail)) {
-            logger.error(`Login failed - Invalid email format: ${sanitizedEmail}`);
             return res.status(400).json({ error: "Invalid email format." });
         }
 
         const user = await User.findOne({ email: sanitizedEmail }).lean();
-        if (!user) {
-            logger.error(`Login failed - User not found: ${sanitizedEmail}`);
+        if (!user || passwordHash !== user.passwordHash) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        if (passwordHash !== user.passwordHash) {
-            logger.error(`Login failed - Incorrect password for email: ${email}`);
-            return res.status(401).json({ error: "Invalid email or password." });
-        }
+        const payload = { id: user._id, name: user.displayName };
+        const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: "15m" });
+        const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
 
-        const payload = { id: user.id, name: user.displayName };
-        const accessToken = jwt.sign(payload, SECRET, { expiresIn: "2h" });
-        const refreshToken = jwt.sign(payload, SECRET, { expiresIn: "7d" });
+        // Save refresh token in MongoDB
+        await RefreshToken.create({ token: refreshToken, userId: user._id });
 
-        refreshTokens.add(refreshToken);
         logger.info(`User ${user.displayName} logged in`);
 
-        res.json({ accessToken, refreshToken });
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+            sameSite: "strict",
+            path: "/", // Restrict cookie usage
+        });
+
+        res.json({ accessToken });
     } catch (error) {
-        logger.error(`Login error: ${error.message}`);
         next(error);
     }
 });
 
-// Logout route
-router.post("/logout", (req, res, next) => {
+// Logout Route
+router.post("/logout", async (req, res, next) => {
     try {
-        const { refreshToken } = req.body;
-        if (!refreshToken || !refreshTokens.has(refreshToken)) {
-            throw new Error("Invalid refresh token");
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) return res.status(400).json({ error: "No refresh token found" });
+
+        // Delete refresh token from database
+        const deleted = await RefreshToken.deleteOne({ token: refreshToken });
+        if (deleted.deletedCount === 0) {
+            return res.status(400).json({ error: "Refresh token not found in database" });
         }
 
-        refreshTokens.delete(refreshToken);
-        logger.info("User logged out");
+        // Clear refresh token cookie
+        res.clearCookie("refreshToken", { path: "/api/auth/refresh-token" });
         res.json({ message: "Logged out successfully" });
     } catch (error) {
         next(error);
     }
 });
 
-// Refresh token route
-router.post("/refresh-token", (req, res, next) => {
+// Refresh Token Route
+router.post("/refresh-token", async (req, res, next) => {
     try {
-        const { refreshToken } = req.body;
-        if (!refreshToken || !refreshTokens.has(refreshToken)) {
-            logger.warn("Invalid refresh token attempt");
-            throw new Error("Invalid refresh token");
-        }
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
 
-        jwt.verify(refreshToken, SECRET, (err, decoded) => {
+        // Check if token exists in the database
+        const existingToken = await RefreshToken.findOne({ token: refreshToken });
+        if (!existingToken) return res.status(403).json({ error: "Invalid refresh token" });
+
+        // Verify refresh token
+        jwt.verify(refreshToken, REFRESH_SECRET, async (err, decoded) => {
             if (err) {
-                logger.error("Invalid refresh token verification failed");
-                throw new Error("Invalid refresh token");
+                await RefreshToken.deleteOne({ token: refreshToken }); // Remove expired token
+                return res.status(403).json({ error: "Invalid or expired refresh token" });
             }
 
-            const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, SECRET, { expiresIn: "15m" });
-            logger.info(`New access token issued for user ${decoded.name}`);
+            // Generate new access token
+            const newAccessToken = jwt.sign({ id: decoded.id, name: decoded.name }, ACCESS_SECRET, { expiresIn: "15m" });
+
             res.json({ accessToken: newAccessToken });
         });
     } catch (error) {
