@@ -31,14 +31,15 @@ export default function Login() {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
+      console.log('Login response:', data)
       toast.success("Login successful! Redirecting...");
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.accessToken); 
-        localStorage.setItem("user", JSON.stringify({
-          name: data.user.name,
-          email: data.user.email,
-          id: data.user.id,}));
+        // localStorage.setItem("user", JSON.stringify({
+        //   name: data.user.name,
+        //   email: data.user.email,
+        //   id: data.user.id,}));
       }
 
       setTimeout(() => {
