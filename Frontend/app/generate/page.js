@@ -12,6 +12,7 @@ import {
   saveStory,
 } from "../api/generate/generate";
 import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpGeneric from "../components/LoadingSpGeneric";
 
 export default function GeneratePage() {
   const router = useRouter();
@@ -99,7 +100,7 @@ export default function GeneratePage() {
   }
 
   return (
-    <div className="flex mb-8 flex-col items-center min-h-screen px-4">
+    <div className="flex flex-col min-h-screen justify-between py-8 px-2 items-center text-center">
       {storyParts.length > 0 ? (
         <TextBox
           variant={
@@ -123,7 +124,7 @@ export default function GeneratePage() {
         </TextBox>
       ) : (
         <div className="mx-auto text-center my-8  ">
-          <div className="font-black text-4xl mb-8 ">Generate</div>
+          <h2 className="mt-10  font-black text-5xl mb-8 ">Generate</h2>
           <h1 className="text-3xl max-w-75 font-black mb-4">
             Select one of these prompts to continue
           </h1>

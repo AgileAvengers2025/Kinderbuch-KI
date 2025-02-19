@@ -1,6 +1,5 @@
 import Button from "./components/Button";
 import Image from "next/image";
-//import Cloud from "./components/Cloud";
 
 export default function Home() {
   return (
@@ -23,10 +22,10 @@ export default function Home() {
           className="md:w-[460px] xl:w-[590px]"
         />
       </div>
-      <div className="flex flex-col min-h-screen justify-between  items-center text-center">
-        <div className="w-full px-4 sm:px-0">
+      <div className="flex flex-col min-h-screen justify-between py-8 px-2 items-center text-center">
+        <div className="w-full sm:px-0">
           <Image
-            src="/Kinderbuch.svg"
+            src="/mellow.svg"
             alt="Header illustration"
             width={420}
             height={200}
@@ -40,7 +39,7 @@ export default function Home() {
           where dreams are made
         </div>
 
-        <div className="w-66 font-black grid grid-cols-1 gap-4 justify-items-center mb-8">
+        <div className="w-66 font-black grid grid-cols-1 gap-4 justify-items-center ">
           <Button variant="primary" className="w-66" href="/register">
             Register
           </Button>

@@ -1,8 +1,27 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Button from "../components/Button";
 import Image from "next/image";
+import LoadingSpGeneric from "../components/LoadingSpinner";
 
 export default function Dashboard() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
+
+  // Optional: Show loading state while checking auth
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) {
+    return LoadingSpGeneric
+  }
+
   return (
     <div className="flex flex-col min-h-screen justify-between items-center text-center">
       {/* Header */}
