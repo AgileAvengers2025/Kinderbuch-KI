@@ -21,34 +21,41 @@ export default function GeneratePage() {
   const [selectedTitles, setSelectedTitles] = useState([]);
   const [storyParts, setStoryParts] = useState([]);
   const randomSeedRef = useRef(Date.now()); // Create a stable random seed
+  const [isLoadingPrompts, setIsLoadingPrompts] = useState(false);
 
   const mutation = useMutation({
     mutationFn: generateStory,
     onSuccess: (data) => {
-      console.log(`Starting onSuccess for scene ${currentScene}`); // Debug log
+      // Add validation for current scene and data
+      if (!data || !data.response) {
+        console.error("Empty response received for scene:", currentScene);
+        toast.error("No story content generated");
+        return;
+      }
+
+      // Only update state if we have a valid response
+      console.log(`Processing response for scene ${currentScene}`);
 
       setStoryParts((prev) => {
-        // Check if we already have this story part
-        if (prev.includes(data.response)) {
-          return prev;
-        }
-        return [...prev, data.response];
+        // Only add the new story part if it's for the current scene
+        const newStoryParts = [...prev];
+        newStoryParts[currentScene - 1] = data.response;
+        return newStoryParts;
       });
 
-      setCurrentScene((prev) => {
-        // Prevent advancing if we're already at the next scene
-        if (prev > currentScene) {
-          console.log("Scene already advanced, preventing double update");
-          return prev;
-        }
-        if (prev === 5) {
-          toast.success("Story complete!");
-          return prev;
-        }
-        return prev + 1;
-      });
+      // Only advance scene after user interaction
+      if (!mutation.isPending) {
+        setCurrentScene((prev) => {
+          if (prev === 5) {
+            toast.success("Story complete!");
+            return prev;
+          }
+          return prev + 1;
+        });
+      }
     },
     onError: (error) => {
+      console.error(`Error generating scene ${currentScene}:`, error);
       toast.error(error.message || "Failed to generate story");
     },
   });
@@ -65,12 +72,20 @@ export default function GeneratePage() {
   });
 
   useEffect(() => {
-    fetchPrompts(currentScene)
-      .then((data) => {
+    const loadPrompts = async () => {
+      setIsLoadingPrompts(true);
+      try {
+        const data = await fetchPrompts(currentScene);
         const randomFour = data.sort(() => 0.5 - Math.random()).slice(0, 4);
         setOptions(randomFour);
-      })
-      .catch((err) => toast.error(err.toString()));
+      } catch (err) {
+        toast.error(err.toString());
+      } finally {
+        setIsLoadingPrompts(false);
+      }
+    };
+
+    loadPrompts();
   }, [currentScene]);
 
   const handleSelect = (title) => {
@@ -83,7 +98,6 @@ export default function GeneratePage() {
 
   const handleSave = () => {
     saveMutation.mutate({
-
       title: selectedTitles.join(" - "), // Create a title from all selected prompts
       content: storyParts.join("\n\n"), // Join all story parts with newlines
     });
@@ -91,14 +105,32 @@ export default function GeneratePage() {
 
   const handleNext = () => {
     const currentTitle = selectedTitles[currentScene - 1];
+
+    // Validate current selection
     if (!currentTitle) {
       toast.error("Please select a prompt first");
       return;
     }
-    // Trigger your mutation here only
+
+    // Add additional validation
+    if (currentScene > 5) {
+      toast.error("Story is already complete");
+      return;
+    }
+
+    // Get the previous story part if it exists
+    const previousStoryPart = storyParts[currentScene - 2] || "";
+
+    console.log(`Generating story for scene ${currentScene}`, {
+      title: currentTitle,
+      beforeOutput: previousStoryPart,
+    });
+
+    // Trigger mutation with validation
     mutation.mutate({
       title: currentTitle,
-      beforeOutput: storyParts[storyParts.length - 1] || "",
+      beforeOutput: previousStoryPart,
+      sceneNumber: currentScene, // Add scene number to track current progress
     });
   };
 
@@ -152,19 +184,24 @@ export default function GeneratePage() {
         <>
           <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
           <div className="flex flex-col gap-6 mb-4">
-            {options.map((item) => {
-              const isSelected =
-                selectedTitles[currentScene - 1] === item.title;
-              return (
-                <Button
-                  key={item._id}
-                  variant={isSelected ? "quaternary" : "primary"}
-                  onClick={() => handleSelect(item.title)}
-                >
-                  {item.title}
-                </Button>
-              );
-            })}
+            {isLoadingPrompts ? (
+              <LoadingSpinner />
+            ) : (
+              options.map((item) => {
+                const isSelected =
+                  selectedTitles[currentScene - 1] === item.title;
+                return (
+                  <Button
+                    key={item._id}
+                    variant={isSelected ? "quaternary" : "primary"}
+                    onClick={() => handleSelect(item.title)}
+                    disabled={mutation.isPending || isLoadingPrompts}
+                  >
+                    {item.title}
+                  </Button>
+                );
+              })
+            )}
           </div>
         </>
       )}
@@ -174,7 +211,11 @@ export default function GeneratePage() {
         onNext={currentScene === 5 ? handleSave : handleNext}
         onPrevious={handlePrevious}
         totalSteps={5}
-        disabled={mutation.isPending || !selectedTitles[currentScene - 1]} // Add this line
+        disabled={
+          mutation.isPending ||
+          !selectedTitles[currentScene - 1] ||
+          isLoadingPrompts
+        }
       />
     </div>
   );
