@@ -5,11 +5,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 const { logger } = require("../middleware/logging");
 const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
-
-require("dotenv").config();
-const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
-
 const router = express.Router();
 
 // Protected Test Route
@@ -50,7 +45,7 @@ router.post("/login", async (req, res, next) => {
         }
 
         // Token generation
-        const payload = { id: user._id, name: user.displayName };
+        const payload = { id: user._id, name: user.displayName, email: user.email };
         const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: "5d" });
         const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
 
@@ -59,8 +54,13 @@ router.post("/login", async (req, res, next) => {
 
         logger.info(`User ${user.displayName} logged in`);
 
-        // Cookies with refresh token
-        res.cookie("refreshToken", refreshToken, {
+        // Set cookies with refresh token and user info
+        res.cookie("auth", JSON.stringify({
+            refreshToken,
+            email: user.email,
+            displayName: user.displayName,
+            id: user._id
+        }), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Secure cookies in production
             sameSite: "strict",
@@ -73,6 +73,7 @@ router.post("/login", async (req, res, next) => {
         next(error);
     }
 });
+
 
 // Logout Route
 router.post("/logout", async (req, res, next) => {

@@ -18,7 +18,6 @@ const registerUser = async (userData) => {
   return response.data;
 };
 
-
 export default function Register() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -32,9 +31,14 @@ export default function Register() {
     mutationFn: registerUser,
     onSuccess: (data) => {
       toast.success("Registration successful! Redirecting...");
-      
+
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.accessToken); // Store the access token
+        localStorage.setItem("user", JSON.stringify({
+          id: data.user.id,
+          displayName: data.user.displayName,
+          email: data.user.email,
+        })); // Store user details
       }
 
       setTimeout(() => {
