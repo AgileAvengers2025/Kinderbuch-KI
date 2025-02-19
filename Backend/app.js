@@ -5,6 +5,8 @@ const cors = require("cors");
 const cookieParser = require('cookie-parser');
 
 require("dotenv").config();
+const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // Import middleware
