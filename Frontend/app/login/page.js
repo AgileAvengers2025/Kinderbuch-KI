@@ -34,7 +34,11 @@ export default function Login() {
       toast.success("Login successful! Redirecting...");
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", data.accessToken); // Store access token
+        localStorage.setItem("token", data.accessToken); 
+        localStorage.setItem("user", JSON.stringify({
+          name: data.user.name,
+          email: data.user.email,
+          id: data.user.id,}));
       }
 
       setTimeout(() => {

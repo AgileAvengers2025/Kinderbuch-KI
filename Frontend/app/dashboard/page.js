@@ -7,6 +7,7 @@ import LoadingSpGeneric from "../components/LoadingSpinner";
 
 export default function Dashboard() {
   const router = useRouter();
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,7 +28,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="w-full px-4 sm:px-0">
         <Image
-          src="/Kinderbuch.svg"
+          src="/mellow.svg"
           alt="Header illustration"
           width={350}
           height={200}

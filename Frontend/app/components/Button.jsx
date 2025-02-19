@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export default function Button({
   variant = "primary",
@@ -8,6 +10,23 @@ export default function Button({
   className = "",
   ...rest
 }) {
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Create audio element once when component mounts
+    audioRef.current = new Audio("/sounds/click.mp3");
+    audioRef.current.volume = 0.5; // Adjust volume (0.0 to 1.0)
+  }, []);
+
+  const handleClick = (e) => {
+    // Play sound
+    audioRef.current
+      .play()
+      .catch((error) => console.log("Audio play failed:", error));
+    // Call original onClick if provided
+    if (onClick) onClick(e);
+  };
+
   const baseClasses =
     "px-4 py-2 rounded-[1.7rem] text-xl shadow-[0_4px_0_0_rgba(0,0,0,1)]";
   let variantClasses = "";
@@ -40,14 +59,28 @@ export default function Button({
   if (href) {
     return (
       <Link href={href}>
-        <button className={classes} onClick={onClick} {...rest}>
+        <button
+          className={classes}
+          onClick={(e) => {
+            handleClick(e);
+            if (onClick) onClick(e);
+          }}
+          {...rest}
+        >
           {children}
         </button>
       </Link>
     );
   }
   return (
-    <button className={classes} onClick={onClick} {...rest}>
+    <button
+      className={classes}
+      onClick={(e) => {
+        handleClick(e);
+        if (onClick) onClick(e);
+      }}
+      {...rest}
+    >
       {children}
     </button>
   );
