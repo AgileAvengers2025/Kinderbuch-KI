@@ -60,14 +60,14 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+      <div className="flex  flex-col justify-center">
+        <div className="grid">
+          <h2 className="mt-10 mx-auto text-center text-4xl/9 font-bold tracking-tight max-w-[70%] sm:max-w-none ">
             Sign in to your account
           </h2>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex flex-col mt-10 ">
           <form onSubmit={handleSubmit} className="space-y-6">
             <InputField
               label="Email address"
@@ -111,7 +111,7 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="font-black">
+            <div className="font-black grid w-66 mx-auto">
               <Button
                 type="submit"
                 variant="secondary"
