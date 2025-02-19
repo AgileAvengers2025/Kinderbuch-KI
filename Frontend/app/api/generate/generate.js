@@ -1,9 +1,15 @@
-export const token = process.env.NEXT_PUBLIC_JWT_TOKEN;
+const getAuthHeader = () => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    return token ? `Bearer ${token}` : "";
+  }
+  return "";
+};
 
 export async function fetchPrompts(scene) {
   const res = await fetch(`http://localhost:8082/api/prompts?scene=${scene}`, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: getAuthHeader(),
     },
   });
   if (!res.ok) throw new Error("Failed to fetch prompts");
@@ -15,7 +21,7 @@ export async function generateStory({ title, beforeOutput }) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      Authorization: getAuthHeader(),
     },
     body: JSON.stringify({ title, beforeOutput }),
   });
@@ -24,18 +30,18 @@ export async function generateStory({ title, beforeOutput }) {
 }
 
 export async function saveStory({ userId, title, content }) {
-    const res = await fetch("http://localhost:8082/api/stories", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        userId: userId || 'anonymous', // temporary until auth is implemented
-        title: title,
-        content: content
-      }),
-    });
-    if (!res.ok) throw new Error("Failed to save story");
-    return res.json();
-  }
+  const res = await fetch("http://localhost:8082/api/stories", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAuthHeader(),
+    },
+    body: JSON.stringify({
+      userId: userId || "anonymous",
+      title: title,
+      content: content,
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to save story");
+  return res.json();
+}

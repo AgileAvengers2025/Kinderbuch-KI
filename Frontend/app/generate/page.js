@@ -6,7 +6,11 @@ import StoryNavigation from "../components/StoryNavigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import TextBox from "../components/TextBox";
-import { fetchPrompts, generateStory, saveStory } from "../api/generate/generate";
+import {
+  fetchPrompts,
+  generateStory,
+  saveStory,
+} from "../api/generate/generate";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function GeneratePage() {
@@ -17,13 +21,11 @@ export default function GeneratePage() {
   const [storyParts, setStoryParts] = useState([]);
 
   const mutation = useMutation({
-
     mutationFn: generateStory,
     onSuccess: (data) => {
       setStoryParts((prev) => [...prev, data.response]);
       if (currentScene === 5) {
         toast.success("Story complete!");
-
       } else {
         setCurrentScene((prev) => prev + 1);
       }
@@ -37,7 +39,7 @@ export default function GeneratePage() {
     mutationFn: saveStory,
     onSuccess: () => {
       toast.success("Story saved successfully!");
-      router.push('/stories'); // Redirect to stories list
+      router.push("/stories"); // Redirect to stories list
     },
     onError: (error) => {
       toast.error(error.message || "Failed to save story");
@@ -63,9 +65,9 @@ export default function GeneratePage() {
 
   const handleSave = () => {
     saveMutation.mutate({
-      userId: 'anonymous', // Replace with actual user ID when auth is implemented
-      title: selectedTitles.join(' - '), // Create a title from all selected prompts
-      content: storyParts.join('\n\n') // Join all story parts with newlines
+      userId: "anonymous", // Replace with actual user ID when auth is implemented
+      title: selectedTitles.join(" - "), // Create a title from all selected prompts
+      content: storyParts.join("\n\n"), // Join all story parts with newlines
     });
   };
 
@@ -98,29 +100,27 @@ export default function GeneratePage() {
 
   return (
     <div className="flex mb-8 flex-col items-center min-h-screen px-4">
-    {storyParts.length > 0 ? (
-      <TextBox
-        variant={
-          currentScene === 1
-            ? "adventure"
-            : currentScene === 2
-            ? "curiosity"
-            : currentScene === 3
-            ? "calm"
-            : "adventure"
-        }
-        className={`${
-          currentScene === 5 
-            ? 'h-[70vh] overflow-y-auto [&>*]:h-auto' 
-            : ''
-        }`}
-      >
-        {storyParts.map((part, idx) => (
-          <p key={idx} className="mb-2">
-            {part}
-          </p>
-        ))}
-      </TextBox>
+      {storyParts.length > 0 ? (
+        <TextBox
+          variant={
+            currentScene === 1
+              ? "adventure"
+              : currentScene === 2
+              ? "curiosity"
+              : currentScene === 3
+              ? "calm"
+              : "adventure"
+          }
+          className={`${
+            currentScene === 5 ? "h-[70vh] overflow-y-auto [&>*]:h-auto" : ""
+          }`}
+        >
+          {storyParts.map((part, idx) => (
+            <p key={idx} className="mb-2">
+              {part}
+            </p>
+          ))}
+        </TextBox>
       ) : (
         <div className="mx-auto text-center my-8  ">
           <div className="font-black text-4xl mb-8 ">Generate</div>
@@ -130,12 +130,13 @@ export default function GeneratePage() {
         </div>
       )}
 
-         {currentScene < 5 && (
+      {currentScene < 5 && (
         <>
           <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
           <div className="flex flex-col gap-6 mb-4">
             {options.map((item) => {
-              const isSelected = selectedTitles[currentScene - 1] === item.title;
+              const isSelected =
+                selectedTitles[currentScene - 1] === item.title;
               return (
                 <Button
                   key={item._id}
@@ -149,17 +150,15 @@ export default function GeneratePage() {
           </div>
         </>
       )}
-      
 
- 
       <StoryNavigation
         currentStep={currentScene}
         onNext={currentScene === 5 ? handleSave : handleNext}
         onPrevious={handlePrevious}
         totalSteps={5}
         disabled={
-          mutation.isPending || 
-          saveMutation.isPending || 
+          mutation.isPending ||
+          saveMutation.isPending ||
           (!selectedTitles[currentScene - 1] && currentScene < 5)
         }
       />
