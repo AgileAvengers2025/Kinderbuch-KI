@@ -1,7 +1,20 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Button from "./components/Button";
 import Image from "next/image";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
   return (
     <>
       <div className="fixed left-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in-lr">

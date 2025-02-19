@@ -8,6 +8,7 @@ export default function Button({
   href,
   onClick,
   className = "",
+  disabled,
   ...rest
 }) {
   const audioRef = useRef(null);
@@ -54,7 +55,9 @@ export default function Button({
       "transition ease-in-out duration-250 hover-glitter active:scale-95";
   }
 
-  const classes = `${baseClasses} ${variantClasses} ${className}`;
+  const classes = `${baseClasses} ${variantClasses} ${className} ${
+    disabled ? "opacity-70 cursor-not-allowed" : ""
+  }`;
 
   if (href) {
     return (
@@ -65,6 +68,7 @@ export default function Button({
             handleClick(e);
             if (onClick) onClick(e);
           }}
+          disabled={disabled}
           {...rest}
         >
           {children}
@@ -79,6 +83,7 @@ export default function Button({
         handleClick(e);
         if (onClick) onClick(e);
       }}
+      disabled={disabled}
       {...rest}
     >
       {children}

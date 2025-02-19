@@ -53,7 +53,7 @@ export default function Dashboard() {
       </div>
 
       <div className="text-3xl font-black max-w-[20rem] sm:max-w-none mx-auto mb-12">
-        {firstName},<br />
+        {firstName}André,<br />
         Welcome to your magical library
       </div>
 
@@ -69,13 +69,23 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <div className="fixed right-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in">
+      <div className="fixed right-0 bottom-1/3 md:bottom-1/8 block slide-in-rl">
         <Image
-          src="/kids/boy-peek.png"
+          src="/kids/girl.png"
           alt="Kids illustration"
           width={140}
           height={400}
-          className="md:w-[240px] xl:w-[390px] transform scale-x-[-1]"
+          className="md:w-[240px] xl:w-[260px]"
+        />
+      </div>
+      <div className="fixed left-0 bottom-0 block slide-in-lr">
+        <Image
+          src="/misc/lion.png"
+          alt="Lion illustration"
+          width={140}
+          height={400}
+          className="md:w-[240px] xl:w-[260px]"
+          priority
         />
       </div>
     </div>

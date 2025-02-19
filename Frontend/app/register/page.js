@@ -107,7 +107,7 @@ export default function Register() {
             />
 
             <div className="font-black flex justify-center">
-              <Button type="submit" variant="secondary" disabled={mutation.isPending}>
+              <Button className="min-w-60" type="submit" variant="secondary" disabled={mutation.isPending}>
                 {mutation.isPending ? "Registering..." : "Register"}
               </Button>
             </div>

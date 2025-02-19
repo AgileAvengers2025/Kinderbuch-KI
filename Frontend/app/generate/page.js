@@ -185,7 +185,7 @@ export default function GeneratePage() {
           <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
           <div className="flex flex-col gap-6 mb-4">
             {isLoadingPrompts ? (
-              <LoadingSpinner />
+              <LoadingSpGeneric />
             ) : (
               options.map((item) => {
                 const isSelected =
