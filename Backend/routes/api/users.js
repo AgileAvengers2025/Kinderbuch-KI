@@ -39,7 +39,7 @@ router.get("/:id", authMiddleware, async (req, res, next) => {
 // Create a new user
 router.post("/", async (req, res, next) => {
     try {
-        const { email, password, displayName } = req.body;
+        const { email, password, displayName } = req.body; 
 
         if (!email || !password) {
             logger.warn("User creation failed - Missing fields");
