@@ -5,7 +5,7 @@ export default function StoryNavigation({
   currentStep,
   onNext,
   onPrevious,
-  totalSteps = 4,
+  totalSteps = 5,
 }) {
   return (
     <div className="font-black flex justify-between w-full max-w-md mt-8">
@@ -29,7 +29,7 @@ export default function StoryNavigation({
         </svg>
       </Button>
       <Button variant="secondary" onClick={onNext}>
-        {currentStep === totalSteps ? "Generate ✨" : "Next"}
+        {currentStep === totalSteps ? "Save Story 📚" : "Next"}
       </Button>
     </div>
   );

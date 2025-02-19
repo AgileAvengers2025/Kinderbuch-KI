@@ -7,16 +7,35 @@
 
   --peace: linear-gradient(190deg, #f7c898 15.21%, #def0f5 83.3%);
 }
-.slide-in {
-  animation: slideIn 1.5s ease-out forwards;
+.slide-in-lr {
+  animation: slideIn-lr 1.5s ease-out forwards;
 }
 
-@keyframes slideIn {
+.slide-in-rl {
+  animation: slideIn-rl 1.5s ease-out forwards;
+  animation-delay: 0.5s;
+  opacity: 0;
+}
+
+
+@keyframes slideIn-lr {
   from {
     transform: translateX(-100%);
   }
   to {
     transform: translateX(0);
+  }
+}
+
+
+@keyframes slideIn-rl {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -45,7 +64,6 @@
   animation: gradientFlow 3s ease infinite;
   background-size: 200% 200%;
 }
-
 
 .hover-sparkle:hover {
   animation: sparkle 4s linear infinite;

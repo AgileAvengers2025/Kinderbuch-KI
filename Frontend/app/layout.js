@@ -15,16 +15,18 @@ const Roca2 = LocalFont({
 });
 
 export const metadata = {
-  title: "KInderbuch",
+  title: "MellowDreams",
   description: "Generated your stories with Ai",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${Roca2.className}`}>
-      <body className="relative min-h-screen text-[#2c2c2c]">
-        <div className="bg-[url('/background.png')] fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:not-fixed md:rotate-90" />
-        <Providers>{children}</Providers>
+      <body className="fixed inset-0 overflow-hidden text-[#2c2c2c]">
+        <div className="bg-[url('/background.png')] fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:not-fixed" />
+        <main className="h-screen w-screen overflow-hidden">
+          <Providers>{children}</Providers>
+        </main>
         <Toaster position="top-center" />
       </body>
     </html>
