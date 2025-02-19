@@ -39,14 +39,14 @@ export default function Home() {
           where dreams are made
         </div>
 
-        <div className="w-66 font-black grid grid-cols-1 gap-4 justify-items-center ">
-          <Button variant="primary" className="w-66" href="/register">
+        <div className="w-60 font-black grid grid-cols-1 gap-4 justify-items-center ">
+          <Button variant="primary" className="w-60" href="/register">
             Register
           </Button>
-          <Button variant="secondary" className="w-66" href="/login">
+          <Button variant="secondary" className="w-60" href="/login">
             Login
           </Button>
-          <Button variant="tertiary" className="w-66" href="/generate">
+          <Button variant="tertiary" className="w-60" href="/generate">
             experiment🪄
           </Button>
         </div>

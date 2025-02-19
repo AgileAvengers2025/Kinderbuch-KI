@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../components/Button";
 import StoryNavigation from "../components/StoryNavigation";
@@ -20,16 +20,33 @@ export default function GeneratePage() {
   const [options, setOptions] = useState([]);
   const [selectedTitles, setSelectedTitles] = useState([]);
   const [storyParts, setStoryParts] = useState([]);
+  const randomSeedRef = useRef(Date.now()); // Create a stable random seed
 
   const mutation = useMutation({
     mutationFn: generateStory,
     onSuccess: (data) => {
-      setStoryParts((prev) => [...prev, data.response]);
-      if (currentScene === 5) {
-        toast.success("Story complete!");
-      } else {
-        setCurrentScene((prev) => prev + 1);
-      }
+      console.log(`Starting onSuccess for scene ${currentScene}`); // Debug log
+
+      setStoryParts((prev) => {
+        // Check if we already have this story part
+        if (prev.includes(data.response)) {
+          return prev;
+        }
+        return [...prev, data.response];
+      });
+
+      setCurrentScene((prev) => {
+        // Prevent advancing if we're already at the next scene
+        if (prev > currentScene) {
+          console.log("Scene already advanced, preventing double update");
+          return prev;
+        }
+        if (prev === 5) {
+          toast.success("Story complete!");
+          return prev;
+        }
+        return prev + 1;
+      });
     },
     onError: (error) => {
       toast.error(error.message || "Failed to generate story");
@@ -66,14 +83,14 @@ export default function GeneratePage() {
 
   const handleSave = () => {
     saveMutation.mutate({
-      userId: "anonymous", // Replace with actual user ID when auth is implemented
+
       title: selectedTitles.join(" - "), // Create a title from all selected prompts
       content: storyParts.join("\n\n"), // Join all story parts with newlines
     });
   };
 
   const handleNext = () => {
-    const currentTitle = selectedTitles[selectedTitles.length - 1];
+    const currentTitle = selectedTitles[currentScene - 1];
     if (!currentTitle) {
       toast.error("Please select a prompt first");
       return;
@@ -157,11 +174,7 @@ export default function GeneratePage() {
         onNext={currentScene === 5 ? handleSave : handleNext}
         onPrevious={handlePrevious}
         totalSteps={5}
-        disabled={
-          mutation.isPending ||
-          saveMutation.isPending ||
-          (!selectedTitles[currentScene - 1] && currentScene < 5)
-        }
+        disabled={mutation.isPending || !selectedTitles[currentScene - 1]} // Add this line
       />
     </div>
   );

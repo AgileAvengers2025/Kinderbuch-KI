@@ -8,26 +8,25 @@ import LoadingSpGeneric from "../components/LoadingSpinner";
 export default function Dashboard() {
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("user");
 
-    if (!token) {
-      router.push("/");
-    } else if (userData) {
-      const user = JSON.parse(userData);
-      const firstNameOnly = user.name.split(" ")[0];
-      setFirstName(firstNameOnly);
-    }
+      if (!token) {
+        router.push("/");
+      } else if (userData) {
+        const user = JSON.parse(userData);
+        const firstNameOnly = user.name;
+        setFirstName(firstNameOnly);
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
   }, [router]);
-
-  // Optional: Show loading state while checking auth
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  if (!token) {
-    return LoadingSpGeneric;
-  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -35,9 +34,13 @@ export default function Dashboard() {
     router.push("/");
   };
 
+  if (isLoading) {
+    return <LoadingSpGeneric />;
+  }
+
   return (
     <div className="flex flex-col min-h-screen justify-between items-center text-center">
-      {/* Header */}
+      {/* Rest of your JSX remains the same */}
       <div className="w-full px-4 sm:px-0">
         <Image
           src="/mellow.svg"
@@ -49,12 +52,11 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Welcome Message */}
       <div className="text-3xl font-black max-w-[20rem] sm:max-w-none mx-auto mb-12">
-      {firstName},<br />Welcome to your magical library
+        {firstName},<br />
+        Welcome to your magical library
       </div>
 
-      {/* Main Navigation Buttons */}
       <div className="font-black grid grid-cols-1 gap-6 justify-items-center mb-8">
         <Button variant="primary" href="/generate">
           Create New Story 📝
@@ -67,7 +69,6 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Decorative Image */}
       <div className="fixed right-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in">
         <Image
           src="/kids/boy-peek.png"
