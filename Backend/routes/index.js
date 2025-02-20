@@ -5,11 +5,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 const { logger } = require("../middleware/logging");
 const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
-
-require("dotenv").config();
-const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
-
 const router = express.Router();
 
 // Protected Test Route
@@ -27,49 +22,58 @@ router.post("/login", async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
+        // Check if email and password are provided
         if (!email || !password) {
             return res.status(400).json({ error: "Email and password are required." });
         }
 
+        // Sanitize email by trimming and converting to lowercase
         const sanitizedEmail = email.trim().toLowerCase();
 
+        // Validate email format using regex
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(sanitizedEmail)) {
             return res.status(400).json({ error: "Invalid email format." });
         }
 
+        // Find the user by sanitized email
         const user = await User.findOne({ email: sanitizedEmail }).lean();
         if (!user) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        // Compare password with the saved hash
+        // Compare the provided password with the stored hash
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
         // Token generation
-        const payload = { id: user._id, name: user.displayName };
-        const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: "15m" });
-        const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
-
-        // Save refresh token to DB
+        const payload = { id: user._id, name: user.displayName, email: user.email };
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5d" });
+        const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
         await RefreshToken.create({ token: refreshToken, userId: user._id });
 
         logger.info(`User ${user.displayName} logged in`);
 
-        // Cookies with refresh token
-        res.cookie("refreshToken", refreshToken, {
+        // Set cookies with refresh token and user info
+        res.cookie("auth", JSON.stringify({
+            refreshToken,
+            email: user.email,
+            displayName: user.displayName,
+            id: user._id
+        }), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Secure cookies in production
             sameSite: "strict",
             path: "/", // Restrict cookie usage
         });
 
+        // Respond with the access token
         res.json({ accessToken });
 
     } catch (error) {
+        console.error("Error in login route:", error.stack);
         next(error);
     }
 });

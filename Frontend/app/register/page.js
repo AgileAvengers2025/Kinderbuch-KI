@@ -18,7 +18,6 @@ const registerUser = async (userData) => {
   return response.data;
 };
 
-
 export default function Register() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -32,9 +31,14 @@ export default function Register() {
     mutationFn: registerUser,
     onSuccess: (data) => {
       toast.success("Registration successful! Redirecting...");
-      
+
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.accessToken); // Store the access token
+        localStorage.setItem("user", JSON.stringify({
+          id: data.user.id,
+          displayName: data.user.displayName,
+          email: data.user.email,
+        })); // Store user details
       }
 
       setTimeout(() => {
@@ -62,7 +66,7 @@ export default function Register() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight">
             Create your account
           </h2>
         </div>
@@ -103,7 +107,7 @@ export default function Register() {
             />
 
             <div className="font-black flex justify-center">
-              <Button type="submit" variant="secondary" disabled={mutation.isPending}>
+              <Button className="min-w-60" type="submit" variant="secondary" disabled={mutation.isPending}>
                 {mutation.isPending ? "Registering..." : "Register"}
               </Button>
             </div>

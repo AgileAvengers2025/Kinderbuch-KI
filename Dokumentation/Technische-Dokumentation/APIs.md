@@ -7,39 +7,136 @@
 
 ### **Routes**
 
----
-
 ### 1. **Login Route**
 #### **`POST /login`**
 
 ##### **Description:**
-This route is used to log in to the API. It is required to access the protected routes. Upon successful login, the API will return an `accessToken` and a `refreshToken` will be issued for maintaining sessions.
+This route is used to authenticate users. Upon successful login, the API will return an `accessToken`, and the following user details will be stored in an `httpOnly` cookie:
+- `refreshToken`
+- `auth` (contains `email`, `displayName`, and `id`)
 
 ##### **Request Body:**
-- Currently not required.
+```json
+{
+    "email": "user@example.com",
+    "password": "securepassword"
+}
+```
+- **email**: The user's email address.
+- **password**: The user's password.
 
 ##### **Response:**
 - **Success:**
     ```json
     {
-        "accessToken": "JWT_TOKEN",
-        "refreshToken": "JWT_REFRESH_TOKEN"
+        "accessToken": "JWT_ACCESS_TOKEN"
     }
     ```
     - **accessToken**: A JWT (JSON Web Token) used for accessing protected routes.
-    - **refreshToken**: A long-lived refresh token to refresh the access token when expired.
 
-##### **Example:**
+- **Cookies Set:**
+    - **`refreshToken`**: The refresh token used for maintaining the session.
+    - **`auth`**: A JSON-encoded string containing user details.
+
+##### **Example Request:**
 ```bash
 POST /login
 ```
-Response:
+**Request Body:**
 ```json
 {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZyb250ZW5kIiwiaWF0IjoxNzM4NTc4NDYxLCJleHAiOjE3Mzg1ODIwNjF9.fixuFssDN3gypWYKMszywnUNckRQdRG9fdHmW8nPekg",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZyb250ZW5kIiwiaWF0IjoxNzM4NTc4NDYxLCJleHAiOjE3Mzg2ODAwNjF9.ZykrrRtqACM0h3h1qLxfMnkgUm2Rk1hwiwRLm6gH0XY"
+    "email": "user@example.com",
+    "password": "securepassword"
 }
 ```
+**Response:**
+```json
+{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZyb250ZW5kIiwiaWF0IjoxNzM4NTc4NDYxLCJleHAiOjE3Mzg1ODIwNjF9.fixuFssDN3gypWYKMszywnUNckRQdRG9fdHmW8nPekg"
+}
+```
+**Cookies Set:**
+- **`refreshToken`** (httpOnly, secure, sameSite=strict):  
+  ```json
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZyb250ZW5kIiwiaWF0IjoxNzM4NTc4NDYxLCJleHAiOjE3Mzg2ODAwNjF9.ZykrrRtqACM0h3h1qLxfMnkgUm2Rk1hwiwRLm6gH0XY"
+  ```
+- **`auth`** (httpOnly, secure, sameSite=strict) → Contains:
+  ```json
+  {
+      "email": "user@example.com",
+      "displayName": "User Name",
+      "id": "123456789"
+  }
+  ```
+
+---
+
+#### **`POST /login`**
+
+##### **Description:**
+This route is used to authenticate users. Upon successful login, the API will return an `accessToken`, and the following user details will be stored in an `httpOnly` cookie:
+- `refreshToken`
+- `email`
+- `displayName`
+- `id`
+
+##### **Request Body:**
+```json
+{
+    "email": "user@example.com",
+    "password": "securepassword"
+}
+```
+- **email**: The user's email address.
+- **password**: The user's password.
+
+##### **Response:**
+- **Success:**
+    ```json
+    {
+        "accessToken": "JWT_TOKEN"
+    }
+    ```
+    - **accessToken**: A JWT (JSON Web Token) used for accessing protected routes.
+
+- **Cookies Set:**
+    - `refreshToken`: The refresh token used for maintaining the session.
+    - `auth`: A JSON-encoded string containing:
+      ```json
+      {
+          "email": "user@example.com",
+          "displayName": "User Name",
+          "id": "USER_ID"
+      }
+      ```
+
+##### **Example Request:**
+```bash
+POST /login
+```
+**Request Body:**
+```json
+{
+    "email": "user@example.com",
+    "password": "securepassword"
+}
+```
+**Response:**
+```json
+{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZyb250ZW5kIiwiaWF0IjoxNzM4NTc4NDYxLCJleHAiOjE3Mzg1ODIwNjF9.fixuFssDN3gypWYKMszywnUNckRQdRG9fdHmW8nPekg"
+}
+```
+**Cookies Set:**
+- **`refreshToken`** (httpOnly, secure, sameSite=strict)
+- **`auth`** (httpOnly, secure, sameSite=strict) → Contains:
+  ```json
+  {
+      "email": "user@example.com",
+      "displayName": "User Name",
+      "id": "USER_ID"
+  }
+  ```
 
 ---
 

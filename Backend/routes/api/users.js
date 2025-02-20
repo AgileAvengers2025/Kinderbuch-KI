@@ -4,9 +4,9 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
+const RefreshToken = require("../../models/RefreshToken");
 const authMiddleware = require("../../middleware/authMiddleware");
-const { logger } = require("../../middleware/logging");
-const { ACCESS_TOKEN_SECRET } = process.env;
+const { logger } = require("../../middleware/logging");  
 
 // Get all users
 router.get("/", authMiddleware, async (req, res, next) => {
@@ -39,7 +39,7 @@ router.get("/:id", authMiddleware, async (req, res, next) => {
 // Create a new user
 router.post("/", async (req, res, next) => {
     try {
-        const { email, password, displayName, kidsNames } = req.body;  // Accept password (not passwordHash) from frontend
+        const { email, password, displayName } = req.body; 
 
         if (!email || !password) {
             logger.warn("User creation failed - Missing fields");
@@ -61,33 +61,59 @@ router.post("/", async (req, res, next) => {
         }
 
         // Hash the password before saving it to the database
-        const hashedPassword = await bcrypt.hash(password, 10);  // Hash the password with 10 rounds of salt
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
             email: sanitizedEmail,
-            passwordHash: hashedPassword,  // Save the hashed password
+            passwordHash: hashedPassword,
             displayName: displayName || "",
-            kidsNames: kidsNames || [],
         });
 
         await newUser.save();
 
         logger.info(`New user created: ${sanitizedEmail}`);
 
-        // Generate access token after successful user creation
-        const payload = { id: newUser._id, name: newUser.displayName };
-        const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+        // Generate tokens
+        const payload = { id: newUser._id, name: newUser.displayName, email: newUser.email };
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5d" });
+        const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+        console.log("ACCESS_TOKEN_SECRET in users.js:", process.env.ACCESS_TOKEN_SECRET);
+
+        
+
+        // Save refresh token to DB
+        await RefreshToken.create({ token: refreshToken, userId: newUser._id });
+
+        // Set cookies with refresh token and user data
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            path: "/",
+        });
+
+        res.cookie("auth", JSON.stringify({ id: newUser._id, displayName: newUser.displayName, email: newUser.email }), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            path: "/",
+        });
 
         res.status(201).json({
             message: "User registered successfully",
             accessToken,
-            user: newUser,  // Optionally, you can return the user as well
+            user: {
+                id: newUser._id,
+                displayName: newUser.displayName,
+                email: newUser.email,
+            },
         });
     } catch (error) {
         logger.error(`User creation error: ${error.message}`);
         next(error);
     }
 });
+
 
 // Update user by ID
 router.put("/:id", authMiddleware, async (req, res, next) => {

@@ -42,3 +42,15 @@
 #14.02
 
 -geerator page in progress
+
+#17.02 
+
+-generate page done
+
+#18.02
+
+-bug fixes
+
+#19.02 
+
+-Bug fixed and now login

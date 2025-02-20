@@ -6,9 +6,10 @@ export default function StoryNavigation({
   onNext,
   onPrevious,
   totalSteps = 5,
+  disabled
 }) {
   return (
-    <div className="font-black flex justify-between w-full max-w-md mt-8">
+    <div className="font-black flex justify-between w-full max-w-3xs ">
       <Button
         variant="primary"
         onClick={onPrevious}
@@ -28,7 +29,12 @@ export default function StoryNavigation({
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
       </Button>
-      <Button variant="secondary" onClick={onNext}>
+      <Button
+        disabled={disabled}
+        variant="secondary"
+        onClick={onNext}
+        className="min-w-38 font-black"
+      >
         {currentStep === totalSteps ? "Save Story 📚" : "Next"}
       </Button>
     </div>
