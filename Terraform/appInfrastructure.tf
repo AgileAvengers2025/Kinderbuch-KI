@@ -6,18 +6,31 @@
 #   cidr_block = "10.0.0.0/16"
 # }
 
-# resource "aws_subnet" "public_subnet" {
+# resource "aws_subnet" "public_subnet1" {
 #   vpc_id = aws_vpc.main.id
 #   cidr_block = "10.0.1.0/24"
 #   map_public_ip_on_launch = true
 #   availability_zone = "eu-central-1a"
 # }
 
-# resource "aws_subnet" "private_subnet" {
+# resource "aws_subnet" "public_subnet2" {
+#   vpc_id = aws_vpc.main.id
+#   cidr_block = "10.0.2.0/24"
+#   map_public_ip_on_launch = true
+#   availability_zone = "eu-central-1b"
+# }
+
+# resource "aws_subnet" "private_subnet1" {
 #     vpc_id = aws_vpc.main.id
-#     cidr_block = "10.0.2.0/24"
+#     cidr_block = "10.0.3.0/24"
 #     availability_zone = "eu-central-1a"  
 # }
+
+# # resource "aws_subnet" "private_subnet2" {
+# #     vpc_id = aws_vpc.main.id
+# #     cidr_block = "10.0.3.0/24"
+# #     availability_zone = "eu-central-1b"  
+# # }
 
 # resource "aws_internet_gateway" "gw" {
 #   vpc_id = aws_vpc.main.id
@@ -79,13 +92,34 @@
 
 # resource "aws_ecs_service" "frontend" {
 #     name = "frontend-service"
-#     cluster = aws_ecs_cluster.main.id
+#     cluster = aws_docdb_cluster.docdb.id
 #     task_definition = aws_ecs_task_definition.frontend.arn
 #     launch_type = "FARGATE"
 #     network_configuration {
-#         subnets = [aws_subnet.public_subnet.id]
+#         subnets = [aws_subnet.private_subnet1.id]
 #         security_groups = [aws_security_group.ecs_sg.id]
 #     }
+# }
+
+# resource "aws_iam_role" "ecs_task_execution" {
+#   name = "ecsTaskExecutionRole"
+
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [{
+#       Effect = "Allow"
+#       Principal = {
+#         Service = "ecs-tasks.amazonaws.com"
+#       }
+#       Action = "sts:AssumeRole"
+#     }]
+#   })
+# }
+
+# resource "aws_iam_policy_attachment" "ecs_task_execution_attach" {
+#   name       = "ecsTaskExecutionRolePolicyAttachment"
+#   roles      = [aws_iam_role.ecs_task_execution.name]
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 # }
 
 # resource "aws_ecs_task_definition" "backend" {
@@ -110,11 +144,11 @@
 
 # resource "aws_ecs_service" "backend" {
 #     name = "backend-service"
-#     cluster = aws_ecs_cluster.main.id
+#     cluster = aws_docdb_cluster.docdb.id
 #     task_definition = aws_ecs_task_definition.backend.arn
 #     launch_type = "FARGATE"
 #     network_configuration {
-#         subnets = [aws_subnet.private_subnet.id]
+#         subnets = [aws_subnet.private_subnet1.id]
 #         security_groups = [aws_security_group.ecs_sg.id]
 #     }
 # }
@@ -124,7 +158,7 @@
 #     internal = false
 #     load_balancer_type = "application"
 #     security_groups = [aws_security_group.ecs_sg.id]
-#     subnets = [aws_subnet.public_subnet.id]
+#     subnets = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
 # }
 
 # resource "aws_lb_listener" "http" {
@@ -134,7 +168,7 @@
 
 #     default_action {
 #         type = "fixed-response"
-#         fixed-response {
+#         fixed_response {
 #             content_type = "text/plain"
 #             message_body = "404 Not Found"
 #             status_code = "404"
