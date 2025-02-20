@@ -77,9 +77,6 @@ router.post("/", async (req, res, next) => {
         const payload = { id: newUser._id, name: newUser.displayName, email: newUser.email };
         const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5d" });
         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
-        console.log("ACCESS_TOKEN_SECRET in users.js:", process.env.ACCESS_TOKEN_SECRET);
-
-        
 
         // Save refresh token to DB
         await RefreshToken.create({ token: refreshToken, userId: newUser._id });
