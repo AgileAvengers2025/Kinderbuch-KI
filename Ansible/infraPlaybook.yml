@@ -1,0 +1,132 @@
+# - name: Provision AWS Infrastructure
+#   hosts: localhost
+#   connection: local
+#   gather_facts: no
+
+#   vars:
+#     region: "eu-central-1"
+#     vpc_cidr: "10.0.0.0/16"
+#     public_subnets:
+#       - cidr: "10.0.1.0/24"
+#         az: "eu-central-1a"
+#       - cidr: "10.0.2.0/24"
+#         az: "eu-central-1b"
+#     private_subnet:
+#       cidr: "10.0.3.0/24"
+#       az: "eu-central-1a"
+#     cluster_name: "ecs-cluster"
+#     frontend_image: "frontend:latest"
+#     backend_image: "backend:latest"
+#     db_username: "demo"
+#     db_password: "demoDemodemo"
+#     db_instance_class: "db.r5.medium"
+
+#   tasks:
+#     - name: Create VPC
+#       ec2_vpc_net:
+#         name: mellowdreams-vpc
+#         cidr_block: "{{ vpc_cidr }}"
+#         region: "{{ region }}"
+#         state: present
+#       register: vpc
+
+#     - name: Create Public Subnets
+#       ec2_vpc_subnet:
+#         vpc_id: "{{ vpc.vpc.id }}"
+#         cidr: "{{ item.cidr }}"
+#         az: "{{ item.az }}"
+#         region: "{{ region }}"
+#         map_public: yes
+#         state: present
+#       loop: "{{ public_subnets }}"
+#       register: public_subnets
+
+#     - name: Create Private Subnet
+#       ec2_vpc_subnet:
+#         vpc_id: "{{ vpc.vpc.id }}"
+#         cidr: "{{ private_subnet.cidr }}"
+#         az: "{{ private_subnet.az }}"
+#         region: "{{ region }}"
+#         state: present
+#       register: private_subnet
+
+#     - name: Create Internet Gateway
+#       ec2_vpc_igw:
+#         vpc_id: "{{ vpc.vpc.id }}"
+#         region: "{{ region }}"
+#         state: present
+#       register: igw
+
+#     - name: Create Security Group for ECS
+#       ec2_group:
+#         name: ecs-security-group
+#         description: Security group for ECS
+#         vpc_id: "{{ vpc.vpc.id }}"
+#         region: "{{ region }}"
+#         rules:
+#           - proto: tcp
+#             ports:
+#               - 80
+#               - 8082
+#               - 3000
+#             cidr_ip: 0.0.0.0/0
+#         state: present
+#       register: ecs_sg
+
+#     - name: Create ECS Cluster
+#       ecs_cluster:
+#         name: "{{ cluster_name }}"
+#         region: "{{ region }}"
+#         state: present
+
+#     - name: Create ECS Task Definitions
+#       ecs_taskdefinition:
+#         family: "{{ item.family }}"
+#         network_mode: "awsvpc"
+#         requires_compatibilities:
+#           - "FARGATE"
+#         memory: 512
+#         cpu: 256
+#         execution_role_arn: "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+#         container_definitions:
+#           - name: "{{ item.name }}"
+#             image: "{{ item.image }}"
+#             cpu: 256
+#             memory: 512
+#             portMappings:
+#               - containerPort: "{{ item.port }}"
+#             environment:
+#               - name: "DB_URI"
+#                 value: "{{ aws_docdb_cluster_endpoint }}"
+#       loop:
+#         - { name: "frontend", family: "frontend", image: "{{ frontend_image }}", port: 3000 }
+#         - { name: "backend", family: "backend", image: "{{ backend_image }}", port: 8082 }
+
+#     - name: Create Load Balancer
+#       elb_application_lb:
+#         name: mellowdreams-lb
+#         security_groups: "{{ ecs_sg.group_id }}"
+#         subnets: "{{ public_subnets.results | map(attribute='subnet.id') | list }}"
+#         region: "{{ region }}"
+#         state: present
+#       register: alb
+
+#     - name: Create AWS DocumentDB Cluster
+#       rds_cluster:
+#         cluster_identifier: mellowdreams-cluster
+#         engine: docdb
+#         master_username: "{{ db_username }}"
+#         master_password: "{{ db_password }}"
+#         vpc_security_group_ids: "{{ ecs_sg.group_id }}"
+#         region: "{{ region }}"
+#         state: present
+#       register: docdb
+
+#     - name: Create AWS DocumentDB Instances
+#       rds_instance:
+#         identifier: "mellowdreams-instance-{{ item }}"
+#         cluster_identifier: "{{ docdb.cluster.cluster_identifier }}"
+#         instance_class: "{{ db_instance_class }}"
+#         region: "{{ region }}"
+#         state: present
+#       loop: [0, 1]
