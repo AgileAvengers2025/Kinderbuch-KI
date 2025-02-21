@@ -26,11 +26,11 @@
 #     availability_zone = "eu-central-1a"  
 # }
 
-# # resource "aws_subnet" "private_subnet2" {
-# #     vpc_id = aws_vpc.main.id
-# #     cidr_block = "10.0.3.0/24"
-# #     availability_zone = "eu-central-1b"  
-# # }
+# resource "aws_subnet" "private_subnet2" {
+#     vpc_id = aws_vpc.main.id
+#     cidr_block = "10.0.4.0/24"
+#     availability_zone = "eu-central-1b"  
+# }
 
 # resource "aws_internet_gateway" "gw" {
 #   vpc_id = aws_vpc.main.id
@@ -158,7 +158,7 @@
 #     internal = false
 #     load_balancer_type = "application"
 #     security_groups = [aws_security_group.ecs_sg.id]
-#     subnets = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
+#     subnets = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id, aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
 # }
 
 # resource "aws_lb_listener" "http" {
