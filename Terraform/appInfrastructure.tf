@@ -32,6 +32,11 @@
 #     availability_zone = "eu-central-1b"  
 # }
 
+# resource "aws_docdb_subnet_group" "docdb_subnet_group" {
+#   name       = "docdb-subnet-group"
+#   subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id] 
+# }
+
 # resource "aws_internet_gateway" "gw" {
 #   vpc_id = aws_vpc.main.id
 # }
@@ -44,6 +49,17 @@
 #     route_table_id = aws_route_table.public_rt.id
 #     destination_cidr_block = "0.0.0.0/0"
 #     gateway_id = aws_internet_gateway.gw.id  
+# }
+
+# resource "aws_security_group" "docdb_sg" {
+#     vpc_id = aws_vpc.main.id
+
+#     ingress {
+#         from_port = 27017
+#         to_port = 27017
+#         protocol = "tcp"
+#         cidr_blocks = ["10.0.0.0/16"]
+#     }
 # }
 
 # resource "aws_security_group" "ecs_sg" {
@@ -71,6 +87,11 @@
 #     } 
 # }
 
+# resource "aws_ecs_cluster" "mellowdreams-cluster" {
+#     name = "mellowdreams-cluster"
+  
+# }
+
 # resource "aws_ecs_task_definition" "frontend" {
 #     family = "frontend"
 #     network_mode = "awsvpc"
@@ -92,7 +113,7 @@
 
 # resource "aws_ecs_service" "frontend" {
 #     name = "frontend-service"
-#     cluster = aws_docdb_cluster.docdb.id
+#     cluster = aws_ecs_cluster.mellowdreams-cluster.id
 #     task_definition = aws_ecs_task_definition.frontend.arn
 #     launch_type = "FARGATE"
 #     network_configuration {
@@ -113,6 +134,21 @@
 #       }
 #       Action = "sts:AssumeRole"
 #     }]
+#   })
+# }
+
+# resource "aws_iam_policy" "sts_policy" {
+#   name        = "GetCallerIdentityPolicy"
+#   description = "Allows calling STS GetCallerIdentity"
+#   policy      = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect   = "Allow",
+#         Action   = "sts:GetCallerIdentity",
+#         Resource = "*"
+#       }
+#     ]
 #   })
 # }
 
@@ -137,14 +173,14 @@
 #             cpu = 256
 #             memory = 512
 #             portMappings = [{ containerPort = 8082, hostPort = 8082}]
-#             environment = [{ name = "DB_URI", value = aws_docdb_cluster.docdb.endpoint }] // value = "mongodb://mongo:27017/kinderbuch"
+#             environment = [{ name = "DB_URI", value = "mongodb://mongo:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
 #         }
 #     ])
 # }
 
 # resource "aws_ecs_service" "backend" {
 #     name = "backend-service"
-#     cluster = aws_docdb_cluster.docdb.id
+#     cluster = aws_ecs_cluster.mellowdreams-cluster.id
 #     task_definition = aws_ecs_task_definition.backend.arn
 #     launch_type = "FARGATE"
 #     network_configuration {
@@ -158,7 +194,7 @@
 #     internal = false
 #     load_balancer_type = "application"
 #     security_groups = [aws_security_group.ecs_sg.id]
-#     subnets = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id, aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+#     subnets = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
 # }
 
 # resource "aws_lb_listener" "http" {
@@ -181,12 +217,13 @@
 #     engine = "docdb"
 #     master_username = "demo"
 #     master_password = "demoDemodemo"
-#     vpc_security_group_ids = [aws_security_group.ecs_sg.id]
+#     vpc_security_group_ids = [aws_security_group.docdb_sg.id]
+#     db_subnet_group_name = aws_docdb_subnet_group.docdb_subnet_group.name
 # }
 
 # resource "aws_docdb_cluster_instance" "docdb_instance" {
 #     count = 2
 #     identifier = "mellowdreams-instance-${count.index}"
-#     cluster_identifier = aws_docdb_cluster.docdb.id
-#     instance_class = "db.r5.medium"  
+#     cluster_identifier = aws_docdb_cluster.docdb.cluster_identifier
+#     instance_class = "db.t3.medium"  
 # }
