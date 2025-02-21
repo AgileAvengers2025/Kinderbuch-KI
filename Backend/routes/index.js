@@ -27,36 +27,37 @@ router.post("/login", async (req, res, next) => {
             return res.status(400).json({ error: "Email and password are required." });
         }
 
-        // Sanitize email by trimming and converting to lowercase
+        // Sanitize email
         const sanitizedEmail = email.trim().toLowerCase();
 
-        // Validate email format using regex
+        // Validate email format
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(sanitizedEmail)) {
             return res.status(400).json({ error: "Invalid email format." });
         }
 
-        // Find the user by sanitized email
+        // Find user
         const user = await User.findOne({ email: sanitizedEmail }).lean();
         if (!user) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        // Compare the provided password with the stored hash
+        // Validate password
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        // Token generation
+        // Generate JWT tokens
         const payload = { id: user._id, name: user.displayName, email: user.email };
         const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "5d" });
         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+
         await RefreshToken.create({ token: refreshToken, userId: user._id });
 
         logger.info(`User ${user.displayName} logged in`);
 
-        // Set cookies with refresh token and user info
+        // Set secure cookie with refresh token
         res.cookie("auth", JSON.stringify({
             refreshToken,
             email: user.email,
@@ -64,13 +65,17 @@ router.post("/login", async (req, res, next) => {
             id: user._id
         }), {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Secure cookies in production
+            secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            path: "/", // Restrict cookie usage
+            path: "/",
         });
 
-        // Respond with the access token
-        res.json({ accessToken });
+        res.json({
+            accessToken,
+            displayName: user.displayName,
+            email: user.email,
+            id: user._id
+        });
 
     } catch (error) {
         console.error("Error in login route:", error.stack);
