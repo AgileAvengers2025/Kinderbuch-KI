@@ -154,12 +154,12 @@ export default function GeneratePage() {
         <TextBox
           variant={
             currentScene === 1
-              ? "Abenteuer"
+              ? "adventure"
               : currentScene === 2
-              ? "Neugier"
+              ? "curiosity"
               : currentScene === 3
-              ? "friedlich"
-              : "Abenteuer"
+              ? "calm"
+              : "adventure"
           }
           className={`${
             currentScene === 5 ? "h-[70vh] overflow-y-auto [&>*]:h-auto" : ""
