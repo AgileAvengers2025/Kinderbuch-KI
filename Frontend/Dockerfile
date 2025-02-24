@@ -4,7 +4,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # Copy package files first to leverage Docker layer caching
-COPY package.json package-lock.json . 
+COPY package.json .
+COPY package-lock.json .
 RUN npm install 
 
 # Copy the entire project
