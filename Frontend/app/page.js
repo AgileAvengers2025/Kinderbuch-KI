@@ -23,16 +23,16 @@ export default function Home() {
           alt="Kids illustration"
           width={140}
           height={400}
-          className=" md:w-[240px] xl:w-[350px] "
+          className=" md:w-[200px] xl:w-[230px] "
         />
       </div>
-      <div className="fixed right-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in-rl">
+      <div className="fixed -right-20 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in-rl">
         <Image
-          src="/misc/dragon.png"
+          src="/misc/lion-mag.png"
           alt="Dragon illustration"
-          width={270}
-          height={400}
-          className="md:w-[460px] xl:w-[590px]"
+          width={240}
+          height={220}
+          className=" md:w-[320px] xl:w-[410px]"
         />
       </div>
       <div className="flex flex-col min-h-screen justify-between py-8 px-2 items-center text-center">
