@@ -6,7 +6,7 @@ export default function LoadingSpGeneric() {
           <span className="text-6xl">🌟</span>
         </div>
         <p className="text-3xl font-semibold text-gray-700">
-          Loading wonders...
+          Wunder werden geladen ...
         </p>
       </div>
     </div>

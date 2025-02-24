@@ -5,7 +5,7 @@ export default function LoadingSpinner() {
         <div className="animate-bounce mb-4">
           <span className="text-6xl">✨</span>
         </div>
-        <p className="text-3xl font-bold">Creating magic...</p>
+        <p className="text-3xl font-bold">Es wird gezaubert ...</p>
       </div>
     </div>
   );

@@ -54,15 +54,15 @@ export default function Dashboard() {
 
       <div className="text-3xl font-black max-w-[20rem] sm:max-w-none mx-auto mb-12">
         {firstName}André,<br />
-        Welcome to your magical library
+        Willkommen zu deiner zauberhaften Bibliothek!
       </div>
 
       <div className="font-black grid grid-cols-1 gap-6 justify-items-center mb-8">
         <Button variant="primary" href="/generate">
-          Create New Story 📝
+          Erstelle eine Geschichte 📝
         </Button>
         <Button variant="secondary" href="/mystories">
-          My Stories 📚
+          Meine Geschichten 📚
         </Button>
         <Button variant="tertiary" onClick={handleLogout}>
           Logout

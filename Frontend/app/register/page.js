@@ -30,7 +30,7 @@ export default function Register() {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      toast.success("Registration successful! Redirecting...");
+      toast.success("Registrierung erfolgreich. Sie werden weitergeleitet.");
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.accessToken); // Store the access token
@@ -46,7 +46,7 @@ export default function Register() {
       }, 2000);
     },
     onError: (error) => {
-      toast.error(error.message || "Registration failed. Please try again.");
+      toast.error(error.message || "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.");
     },
   });
 
@@ -67,7 +67,7 @@ export default function Register() {
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight">
-            Create your account
+            Erstelle ein Konto
           </h2>
         </div>
 
@@ -80,46 +80,46 @@ export default function Register() {
               required
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your name"
+              placeholder="Geben Sie Ihren Namen ein"
               autoComplete="name"
             />
 
             <InputField
-              label="Email address"
+              label="E-Mail-Adresse"
               id="email"
               type="email"
               required
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Geben Sie Ihre E-Mail-Adresse ein"
               autoComplete="email"
             />
 
             <InputField
-              label="Password"
+              label="Passwort"
               id="password"
               type="password"
               required
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="Geben Sie Ihr Passwort ein"
               autoComplete="new-password"
             />
 
             <div className="font-black flex justify-center">
               <Button className="min-w-60" type="submit" variant="secondary" disabled={mutation.isPending}>
-                {mutation.isPending ? "Registering..." : "Register"}
+                {mutation.isPending ? "Sie werden registriert...": "Registrieren"}
               </Button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Already have an account?{" "}
+            Sie haben schon ein Konto?{" "}
             <a
               href="/login"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Sign in here
+              Melden Sie sich hier an
             </a>
           </p>
         </div>

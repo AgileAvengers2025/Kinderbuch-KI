@@ -35,7 +35,7 @@ api.interceptors.request.use(
     if (isExpired) {
       accessToken = await refreshAccessToken();
       if (!accessToken) {
-        return Promise.reject("Session expired");
+        return Promise.reject("Sitzung abgelaufen, bitte erneut einloggen.");
       }
     }
 
