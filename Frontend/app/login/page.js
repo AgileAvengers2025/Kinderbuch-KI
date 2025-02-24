@@ -15,7 +15,7 @@ const loginUser = async (userData) => {
   });
 
   if (!response.data) {
-    throw new Error("Login failed");
+    throw new Error("Login fehlgeschlagen!");
   }
 
   return response.data;
@@ -32,7 +32,7 @@ export default function Login() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       console.log('Login response:', data)
-      toast.success("Login successful! Redirecting...");
+      toast.success("Login erfolgreich! Sie werden weitergeleitet.");
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", data.accessToken); 
@@ -48,7 +48,7 @@ export default function Login() {
       }, 2000);
     },
     onError: (error) => {
-      toast.error(error.message || "Login failed. Please check your credentials.");
+      toast.error(error.message || "Login fehlgeschlagen! Bitte überprüfen Sie Ihre Eingaben.");
     },
   });
 
@@ -69,7 +69,7 @@ export default function Login() {
       <div className="flex  flex-col justify-center">
         <div className="grid">
           <h2 className="mt-10 mx-auto text-center text-4xl/9 font-bold tracking-tight max-w-[70%] sm:max-w-none ">
-            Sign in to your account
+            In Ihrem Konto anmelden.
           </h2>
         </div>
 
@@ -83,7 +83,7 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               autoComplete="email"
-              placeholder="Enter your email"
+              placeholder="Geben Sie Ihre E-Mail-Adresse ein"
             />
 
             <div>
@@ -92,14 +92,14 @@ export default function Login() {
                   htmlFor="password"
                   className="block text-sm/6 font-medium text-gray-900"
                 >
-                  Password
+                  Passwort
                 </label>
                 <div className="text-sm">
                   <a
                     href="#"
                     className="font-semibold text-indigo-600 hover:text-indigo-500"
                   >
-                    Forgot password?
+                    Passwort vergessen?
                   </a>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function Login() {
                   value={formData.password}
                   onChange={handleChange}
                   autoComplete="current-password"
-                  placeholder="Enter your password"
+                  placeholder="Geben Sie Ihr Passwort ein"
                 />
               </div>
             </div>
@@ -123,18 +123,18 @@ export default function Login() {
                 variant="secondary"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Signing in..." : "Sign in"}
+                {mutation.isPending ? "Anmeldung..." : "Anmelden"}
               </Button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
-            Not a member?{" "}
+            Kein Nutzer?{" "}
             <a
               href="/register"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Register right here
+              Registriere dich hier
             </a>
           </p>
         </div>

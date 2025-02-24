@@ -12,7 +12,7 @@ export async function fetchPrompts(scene) {
       Authorization: getAuthHeader(),
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch prompts");
+  if (!res.ok) throw new Error("Prompts konnten nicht geladen werden!");
   return res.json();
 }
 
@@ -25,7 +25,7 @@ export async function generateStory({ title, beforeOutput }) {
     },
     body: JSON.stringify({ title, beforeOutput }),
   });
-  if (!res.ok) throw new Error("Failed to generate story");
+  if (!res.ok) throw new Error("Geschichte konnte nicht generiert werden!");
   return res.json();
 }
 
@@ -42,6 +42,6 @@ export async function saveStory({ userId, title, content }) {
       content: content,
     }),
   });
-  if (!res.ok) throw new Error("Failed to save story");
+  if (!res.ok) throw new Error("Geschichte konnte nicht gespeichert werden!");
   return res.json();
 }

@@ -49,18 +49,18 @@ export default function Home() {
         <div className="mx-64"></div>
 
         <div className="text-3xl font-black max-w-[14rem] sm:max-w-none mx-auto">
-          where dreams are made
+          Wo Träume zu Geschichten werden
         </div>
 
         <div className="w-60 font-black grid grid-cols-1 gap-4 justify-items-center ">
           <Button variant="primary" className="w-60" href="/register">
-            Register
+            Registrieren
           </Button>
           <Button variant="secondary" className="w-60" href="/login">
             Login
           </Button>
           <Button variant="tertiary" className="w-60" href="/generate">
-            experiment🪄
+            Ausprobieren🪄
           </Button>
         </div>
       </div>

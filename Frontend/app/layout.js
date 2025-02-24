@@ -16,7 +16,7 @@ const Roca2 = LocalFont({
 
 export const metadata = {
   title: "MellowDreams",
-  description: "Generated your stories with Ai",
+  description: "Moderne Technologie für aktive Erzähler",
 };
 
 export default function RootLayout({ children }) {

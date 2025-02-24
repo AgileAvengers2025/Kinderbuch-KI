@@ -29,7 +29,7 @@ export default function GeneratePage() {
       // Add validation for current scene and data
       if (!data || !data.response) {
         console.error("Empty response received for scene:", currentScene);
-        toast.error("No story content generated");
+        toast.error("Keine Antwort erhalten. Bitte versuchen Sie es erneut.");
         return;
       }
 
@@ -47,7 +47,7 @@ export default function GeneratePage() {
       if (!mutation.isPending) {
         setCurrentScene((prev) => {
           if (prev === 5) {
-            toast.success("Story complete!");
+            toast.success("Geschichte erfolgreich generiert!");
             return prev;
           }
           return prev + 1;
@@ -56,18 +56,18 @@ export default function GeneratePage() {
     },
     onError: (error) => {
       console.error(`Error generating scene ${currentScene}:`, error);
-      toast.error(error.message || "Failed to generate story");
+      toast.error(error.message || "Fehler beim Erstellen der Geschichte!");
     },
   });
 
   const saveMutation = useMutation({
     mutationFn: saveStory,
     onSuccess: () => {
-      toast.success("Story saved successfully!");
+      toast.success("Geschichte wurde erfolgreich gespeichert!");
       router.push("/stories"); // Redirect to stories list
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to save story");
+      toast.error(error.message || "Fehler beim Speichern der Geschichte!");
     },
   });
 
@@ -108,13 +108,13 @@ export default function GeneratePage() {
 
     // Validate current selection
     if (!currentTitle) {
-      toast.error("Please select a prompt first");
+      toast.error("Bitte wählen Sie eine Option aus, um fortzufahren.");
       return;
     }
 
     // Add additional validation
     if (currentScene > 5) {
-      toast.error("Story is already complete");
+      toast.error("Geschichte bereits erstellt. Bitte speichern Sie Ihre Geschichte.");
       return;
     }
 
@@ -154,12 +154,12 @@ export default function GeneratePage() {
         <TextBox
           variant={
             currentScene === 1
-              ? "adventure"
+              ? "Abenteuer"
               : currentScene === 2
-              ? "curiosity"
+              ? "Neugier"
               : currentScene === 3
-              ? "calm"
-              : "adventure"
+              ? "friedlich"
+              : "Abenteuer"
           }
           className={`${
             currentScene === 5 ? "h-[70vh] overflow-y-auto [&>*]:h-auto" : ""
@@ -173,16 +173,16 @@ export default function GeneratePage() {
         </TextBox>
       ) : (
         <div className="mx-auto text-center my-8  ">
-          <h2 className="mt-10  font-black text-5xl mb-8 ">Generate</h2>
+          <h2 className="mt-10  font-black text-5xl mb-8 ">Erstellen</h2>
           <h1 className="text-3xl max-w-75 font-black mb-4">
-            Select one of these prompts to continue
+          Wähle eine Option aus, um fortzufahren.
           </h1>
         </div>
       )}
 
       {currentScene < 5 && (
         <>
-          <h1 className="text-2xl font-bold mb-4">Scene {currentScene}</h1>
+          <h1 className="text-2xl font-bold mb-4">Szene {currentScene}</h1>
           <div className="flex flex-col gap-6 mb-4">
             {isLoadingPrompts ? (
               <LoadingSpGeneric />

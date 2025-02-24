@@ -35,7 +35,7 @@ export default function StoryNavigation({
         onClick={onNext}
         className="min-w-38 font-black"
       >
-        {currentStep === totalSteps ? "Save Story 📚" : "Next"}
+        {currentStep === totalSteps ? "Geschichte speichern 📚" : "Weiter"}
       </Button>
     </div>
   );
