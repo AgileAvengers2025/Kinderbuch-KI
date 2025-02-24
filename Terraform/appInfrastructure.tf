@@ -178,6 +178,27 @@
 #     ])
 # }
 
+# February 24th
+# resource "aws_ecs_task_definition" "backend" {
+#     family = "backend"
+#     network_mode = "awsvpc"
+#     requires_compatibilities = ["FARGATE"]
+#     memory = "512"
+#     cpu = "256"
+#     execution_role_arn = aws_iam_role.ecs_task_execution.arn
+    
+#     container_definitions = jsonencode([
+#         {
+#             name = "backend"
+#             image = "backend:latest"
+#             cpu = 256
+#             memory = 512
+#             portMappings = [{ containerPort = 8082, hostPort = 8082}]
+#             environment = [{ name = "DB_URI", value = "mongodb://demo:demoDemodemo@${aws_instance.mongodb.private_ip}:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
+#         }
+#     ])
+# }
+
 # resource "aws_ecs_service" "backend" {
 #     name = "backend-service"
 #     cluster = aws_ecs_cluster.mellowdreams-cluster.id
@@ -210,6 +231,33 @@
 #             status_code = "404"
 #         }
 #     }
+# }
+
+# February 24th
+# resource "aws_instance" "mongodb" {
+#     ami = "ami-0abcdef1234567890"
+#     instance_type = "t3.medium"
+#     key_name = "k0g0K"
+#     subnet_id = aws_subnet.private_subnet1.id
+#     security_groups = [aws_security_group.ecs_sg.id]
+
+#     root_block_device {
+#       volume_size = 20 # for 20 GB MongoDB storage
+#     }  
+
+#     tags = {
+#       Name = "MongoDB-Instance"
+#     }
+
+#     user_data = <<-EOF
+#                 #!/bin/bash
+#                 sudo apt update -y
+#                 sudo apt install -y docker.io
+#                 sudo systemctl start docker
+#                 sudo systemctl enable docker
+
+#                 docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=demo -e MONGO_INITDB_ROOT_PASSWORD=demoDemodemo -v /data/db:/data/db --restart always mongo:latest
+#                 EOF
 # }
 
 # resource "aws_docdb_cluster" "docdb" {
