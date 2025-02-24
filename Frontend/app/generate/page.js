@@ -97,9 +97,20 @@ export default function GeneratePage() {
   };
 
   const handleSave = () => {
+    const userData = localStorage.getItem("user");
+    let userId = null;
+    if (userData) {
+      try {
+        userId = JSON.parse(userData).id;
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+
     saveMutation.mutate({
       title: selectedTitles.join(" - "), // Create a title from all selected prompts
       content: storyParts.join("\n\n"), // Join all story parts with newlines
+      userId, // Include the user id from local storage
     });
   };
 
@@ -114,7 +125,9 @@ export default function GeneratePage() {
 
     // Add additional validation
     if (currentScene > 5) {
-      toast.error("Geschichte bereits erstellt. Bitte speichern Sie Ihre Geschichte.");
+      toast.error(
+        "Geschichte bereits erstellt. Bitte speichern Sie Ihre Geschichte."
+      );
       return;
     }
 
@@ -162,7 +175,7 @@ export default function GeneratePage() {
               : "adventure"
           }
           className={`${
-            currentScene === 5 ? "h-[70vh] overflow-y-auto [&>*]:h-auto" : ""
+            currentScene === 5 ? "h-[70vh] overflow-auto [&>*]:h-auto" : ""
           }`}
         >
           {storyParts.map((part, idx) => (
@@ -175,7 +188,7 @@ export default function GeneratePage() {
         <div className="mx-auto text-center my-8  ">
           <h2 className="mt-10  font-black text-5xl mb-8 ">Erstellen</h2>
           <h1 className="text-3xl max-w-75 font-black mb-4">
-          Wähle eine Option aus, um fortzufahren.
+            Wähle eine Option aus, um fortzufahren.
           </h1>
         </div>
       )}
@@ -213,8 +226,8 @@ export default function GeneratePage() {
         totalSteps={5}
         disabled={
           mutation.isPending ||
-          !selectedTitles[currentScene - 1] ||
-          isLoadingPrompts
+          isLoadingPrompts ||
+          (currentScene < 5 && !selectedTitles[currentScene - 1])
         }
       />
     </div>

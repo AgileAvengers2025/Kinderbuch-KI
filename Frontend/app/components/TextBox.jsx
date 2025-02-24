@@ -19,7 +19,7 @@ export default function TextBox({ children, variant, className = "" }) {
       style={{ background: `var(--${variant})` }}
     >
       <div
-        className={`w-full h-44 md:h-64 overflow-auto rounded-2xl p-4 md:p-6 lg:p-8
+        className={`w-full h-84 overflow-auto rounded-2xl p-4 md:p-6 lg:p-8
           bg-[rgba(255,255,255,0.92)] 
           shadow-[inset_0px_4px_20px_0px_rgba(0,10,120,0.15)]
           backdrop-blur-md

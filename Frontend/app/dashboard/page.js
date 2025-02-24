@@ -19,7 +19,7 @@ export default function Dashboard() {
         router.push("/");
       } else if (userData) {
         const user = JSON.parse(userData);
-        const firstNameOnly = user.name;
+        const firstNameOnly = user.name.split(" ")[0];
         setFirstName(firstNameOnly);
       }
       setIsLoading(false);
@@ -41,19 +41,19 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-screen justify-between items-center text-center">
       {/* Rest of your JSX remains the same */}
-      <div className="w-full px-4 sm:px-0">
+      <div className="w-full px-4 py-8 sm:px-0">
         <Image
           src="/mellow.svg"
           alt="Header illustration"
           width={350}
           height={200}
           priority
-          className="m-8 w-[280px] sm:w-[350px] h-auto mx-auto mb-16"
+           className="m-8 w-[330px] sm:w-[390px] xl:w-[500] h-auto mx-auto mb-16"
         />
       </div>
 
-      <div className="text-3xl font-black max-w-[20rem] sm:max-w-none mx-auto mb-12">
-        {firstName}André,<br />
+      <div className="text-3xl font-black max-w-[20rem] xl:max-w-none mx-auto mb-12">
+        {firstName},<br />
         Willkommen zu deiner zauberhaften Bibliothek!
       </div>
 
