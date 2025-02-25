@@ -48,7 +48,7 @@ export default function StoryDetail() {
   }, [id, router]);
 
   const handleBack = () => {
-    router.back();
+    router.push("/mystories");
   };
 
   if (isLoading) {
@@ -110,10 +110,10 @@ export default function StoryDetail() {
                   [&::-webkit-scrollbar-thumb]:bg-[#434343]
                   hover:[&::-webkit-scrollbar-thumb]:bg-opacity-100
                   scrollbar"
-                  style={{
-                    scrollbarColor: `var(${randomGradient}) transparent`,
-                    scrollbarWidth: "thin",
-                  }}
+                style={{
+                  scrollbarColor: `var(${randomGradient}) transparent`,
+                  scrollbarWidth: "thin",
+                }}
               >
                 {story.content.map((section, index) => (
                   <div key={section.id} className="mb-10">
