@@ -173,28 +173,7 @@
 #             cpu = 256
 #             memory = 512
 #             portMappings = [{ containerPort = 8082, hostPort = 8082}]
-#             environment = [{ name = "DB_URI", value = "mongodb://mongo:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
-#         }
-#     ])
-# }
-
-# February 24th
-# resource "aws_ecs_task_definition" "backend" {
-#     family = "backend"
-#     network_mode = "awsvpc"
-#     requires_compatibilities = ["FARGATE"]
-#     memory = "512"
-#     cpu = "256"
-#     execution_role_arn = aws_iam_role.ecs_task_execution.arn
-    
-#     container_definitions = jsonencode([
-#         {
-#             name = "backend"
-#             image = "backend:latest"
-#             cpu = 256
-#             memory = 512
-#             portMappings = [{ containerPort = 8082, hostPort = 8082}]
-#             environment = [{ name = "DB_URI", value = "mongodb://demo:demoDemodemo@${aws_instance.mongodb.private_ip}:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
+#             environment = [{ name = "DB_URI", value = "mongodb://mellowdreams-admin:bhYIrO5Eu35xyAel@${mongodbatlas_cluster.mellowdreams-cluster.connection_strings.standard}/mellowdreams" }] //aws_docdb_cluster.docdb.endpoint }]  
 #         }
 #     ])
 # }
@@ -208,6 +187,95 @@
 #         subnets = [aws_subnet.private_subnet1.id]
 #         security_groups = [aws_security_group.ecs_sg.id]
 #     }
+# }
+
+# resource "aws_ecs_service" "mongodb" {
+#   name            = "mongodb"
+#   cluster         = aws_ecs_cluster.main.id
+#   task_definition = aws_ecs_task_definition.mongodb.arn
+#   desired_count   = 1
+#   launch_type     = "FARGATE"
+
+#   network_configuration {
+#     subnets          = var.private_subnet_ids
+#     security_groups  = [aws_security_group.ecs_sg.id]
+#     assign_public_ip = false
+#   }
+# }
+
+# resource "aws_ecs_task_definition" "mongodb" {
+#   family                   = "mongodb"
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   memory                   = "1024"
+#   cpu                      = "512"
+#   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+
+#   volume {
+#     name = "mongodb-storage"
+#     efs_volume_configuration {
+#       file_system_id = aws_efs_file_system.mongodb_efs.id
+#       transit_encryption = "ENABLED"
+#     }
+#   }
+
+#   container_definitions = jsonencode([
+#     {
+#       name  = "mongodb"
+#       image = "mongo:latest"
+#       cpu   = 512
+#       memory = 1024
+#       essential = true
+#       portMappings = [{ containerPort = 27017, hostPort = 27017 }]
+#       environment = [
+#         { name = "MONGO_INITDB_ROOT_USERNAME", value = "demo" },
+#         { name = "MONGO_INITDB_ROOT_PASSWORD", value = "demoDemodemo" }
+#       ]
+#       mountPoints = [
+#         {
+#           sourceVolume = "mongodb-storage"
+#           containerPath = "/data/db"
+#         }
+#       ]
+#     }
+#   ])
+# }
+
+# resource "aws_efs_file_system" "mongodb_efs" {
+#   creation_token = "mongodb-efs"
+#   performance_mode = "generalPurpose"
+#   throughput_mode = "bursting"
+
+#   tags = {
+#     Name = "MongoDB-EFS"
+#   }
+# }
+
+# resource "aws_efs_mount_target" "mongodb_mount" {
+#   count           = length(var.private_subnet_ids)
+#   file_system_id  = aws_efs_file_system.mongodb_efs.id
+#   subnet_id       = var.private_subnet_ids[count.index]
+#   security_groups = [aws_security_group.efs_sg.id]
+# }
+
+# resource "aws_security_group" "efs_sg" {
+#   name        = "efs-security-group"
+#   description = "Allow NFS traffic for MongoDB EFS"
+#   vpc_id      = var.vpc_id
+
+#   ingress {
+#     from_port   = 2049
+#     to_port     = 2049
+#     protocol    = "tcp"
+#     cidr_blocks = ["10.0.0.0/16"]
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 # }
 
 # resource "aws_lb" "loadbalancer" {
@@ -231,47 +299,4 @@
 #             status_code = "404"
 #         }
 #     }
-# }
-
-# February 24th
-# resource "aws_instance" "mongodb" {
-#     ami = "ami-0abcdef1234567890"
-#     instance_type = "t3.medium"
-#     key_name = "mellowdreams-key"
-#     subnet_id = aws_subnet.private_subnet1.id
-#     security_groups = [aws_security_group.ecs_sg.id]
-
-#     root_block_device {
-#       volume_size = 20 # for 20 GB MongoDB storage - NOT WITH THE FREE TIER OPTION !!!
-#     }  
-
-#     tags = {
-#       Name = "MongoDB-Instance"
-#     }
-
-#     user_data = <<-EOF
-#                 #!/bin/bash
-#                 sudo apt update -y
-#                 sudo apt install -y docker.io
-#                 sudo systemctl start docker
-#                 sudo systemctl enable docker
-
-#                 docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mellowdreams-admin -e MONGO_INITDB_ROOT_PASSWORD=tobeset -v /data/db:/data/db --restart always mongo:latest
-#                 EOF
-# }
-
-# resource "aws_docdb_cluster" "docdb" {
-#     cluster_identifier = "mellowdreams-cluster"
-#     engine = "docdb"
-#     master_username = "demo"
-#     master_password = "demoDemodemo"
-#     vpc_security_group_ids = [aws_security_group.docdb_sg.id]
-#     db_subnet_group_name = aws_docdb_subnet_group.docdb_subnet_group.name
-# }
-
-# resource "aws_docdb_cluster_instance" "docdb_instance" {
-#     count = 2
-#     identifier = "mellowdreams-instance-${count.index}"
-#     cluster_identifier = aws_docdb_cluster.docdb.cluster_identifier
-#     instance_class = "db.t3.medium"  
 # }
