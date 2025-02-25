@@ -189,6 +189,95 @@
 #     }
 # }
 
+# resource "aws_ecs_service" "mongodb" {
+#   name            = "mongodb"
+#   cluster         = aws_ecs_cluster.main.id
+#   task_definition = aws_ecs_task_definition.mongodb.arn
+#   desired_count   = 1
+#   launch_type     = "FARGATE"
+
+#   network_configuration {
+#     subnets          = var.private_subnet_ids
+#     security_groups  = [aws_security_group.ecs_sg.id]
+#     assign_public_ip = false
+#   }
+# }
+
+# resource "aws_ecs_task_definition" "mongodb" {
+#   family                   = "mongodb"
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   memory                   = "1024"
+#   cpu                      = "512"
+#   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+
+#   volume {
+#     name = "mongodb-storage"
+#     efs_volume_configuration {
+#       file_system_id = aws_efs_file_system.mongodb_efs.id
+#       transit_encryption = "ENABLED"
+#     }
+#   }
+
+#   container_definitions = jsonencode([
+#     {
+#       name  = "mongodb"
+#       image = "mongo:latest"
+#       cpu   = 512
+#       memory = 1024
+#       essential = true
+#       portMappings = [{ containerPort = 27017, hostPort = 27017 }]
+#       environment = [
+#         { name = "MONGO_INITDB_ROOT_USERNAME", value = "demo" },
+#         { name = "MONGO_INITDB_ROOT_PASSWORD", value = "demoDemodemo" }
+#       ]
+#       mountPoints = [
+#         {
+#           sourceVolume = "mongodb-storage"
+#           containerPath = "/data/db"
+#         }
+#       ]
+#     }
+#   ])
+# }
+
+# resource "aws_efs_file_system" "mongodb_efs" {
+#   creation_token = "mongodb-efs"
+#   performance_mode = "generalPurpose"
+#   throughput_mode = "bursting"
+
+#   tags = {
+#     Name = "MongoDB-EFS"
+#   }
+# }
+
+# resource "aws_efs_mount_target" "mongodb_mount" {
+#   count           = length(var.private_subnet_ids)
+#   file_system_id  = aws_efs_file_system.mongodb_efs.id
+#   subnet_id       = var.private_subnet_ids[count.index]
+#   security_groups = [aws_security_group.efs_sg.id]
+# }
+
+# resource "aws_security_group" "efs_sg" {
+#   name        = "efs-security-group"
+#   description = "Allow NFS traffic for MongoDB EFS"
+#   vpc_id      = var.vpc_id
+
+#   ingress {
+#     from_port   = 2049
+#     to_port     = 2049
+#     protocol    = "tcp"
+#     cidr_blocks = ["10.0.0.0/16"]
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
+
 # resource "aws_lb" "loadbalancer" {
 #     name = "mellowdreams-lb"
 #     internal = false
@@ -210,47 +299,4 @@
 #             status_code = "404"
 #         }
 #     }
-# }
-
-# terraform {
-#   required_providers {
-#     mongodb = {
-#       source = "mongodb/mongodbatlas"
-#       version = "~> 1.7"
-#     }
-#   }
-# }
-
-# provider "mongodbatlas" {
-#   public_key = var.mongodb_atlas_public_key
-#   private_key = var.mongodb_atlas_private_key 
-# }
-
-# resource "mongodbatlas_cluster" "mellowdreams" {
-#   project_id = var.mongodb_project_id
-#   name = "mellowdreams-cluster"
-#   provider_name = "AWS"
-#   region_name = "EU_CENTRAL_1"
-#   backing_provider_name = "AWS"
-#   provider_instance_size_name = "M10"    
-# }
-
-# resource "mongodbatlas_database_user" "mellowdreams-admin" {
-#   username = "mellowdreams-admin"
-#   password = "passwordtobesethere"
-#   project_id = var.mongodb_project_id
-#   roles {
-#     role_name = "readWrite"
-#     database_name = "mellowdreams-db"
-#   }
-# }
-  
-# resource "mongodbatlas_network_peering" "mellowdreams-peering" {
-#   project_id = var.mongodb_project_id
-#   provider_name = "AWS"
-#   region_name = "EU_CENTRAL_1"
-#   peer_region_name = "EU_CENTRAL_1"
-#   peer_vpc_id = aws_vpc.main.id
-#   peer_account_id = var.aws_account_id
-#   peer_vpc_cidr_block = "10.0.0.0/16"
 # }
