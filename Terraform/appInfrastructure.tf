@@ -92,21 +92,25 @@
 #   name = "mellowdreams-cluster"
 # }
 
-# resource "aws_ecs_task_definition" "frontend" {
-#   family                   = "frontend"
+# resource "aws_ecs_task_definition" "mongodb" {
+#   family                   = "mongodb"
 #   network_mode             = "awsvpc"
 #   requires_compatibilities = ["FARGATE"]
-#   memory                   = "512"
-#   cpu                      = "256"
+#   memory                   = "1024"
+#   cpu                      = "512"
 #   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 
 #   container_definitions = jsonencode([
 #     {
-#       name  = "frontend"
-#       image = "frontend:latest"
-#       cpu   = 256
-#       memory = 512
-#       portMappings = [{ containerPort = 3000 }]
+#       name  = "mongodb"
+#       image = "mongo:latest"
+#       cpu   = 512
+#       memory = 1024
+#       portMappings = [{ containerPort = 27017, hostPort = 27017 }]
+#       environment = [
+#         { name = "MONGO_INITDB_ROOT_USERNAME", value = "mongoAdmin" },
+#         { name = "MONGO_INITDB_ROOT_PASSWORD", value = "SuperSecurePassword" }
+#       ]
 #     }
 #   ])
 # }
@@ -127,10 +131,42 @@
 #       memory = 512
 #       portMappings = [{ containerPort = 8082, hostPort = 8082 }]
 #       environment = [
-#         { name = "MONGO_URI", value = "mongodb://${GitHub.Secrets}:${GitHub.Secrets}@${aws_instance.mongodb.private_ip}:27017/database-name" }
+#         { name = "MONGO_URI", value = "mongodb://demo:demoDemodemo@mongodb:27017/mellowdreams" }
 #       ]
 #     }
 #   ])
+# }
+
+# resource "aws_ecs_task_definition" "frontend" {
+#   family                   = "frontend"
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   memory                   = "512"
+#   cpu                      = "256"
+#   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+
+#   container_definitions = jsonencode([
+#     {
+#       name  = "frontend"
+#       image = "frontend:latest"
+#       cpu   = 256
+#       memory = 512
+#       portMappings = [{ containerPort = 3000 }]
+#     }
+#   ])
+# }
+
+# resource "aws_ecs_service" "mongodb" {
+#   name            = "mongodb-service"
+#   cluster         = aws_ecs_cluster.mellowdreams-cluster.id
+#   task_definition = aws_ecs_task_definition.mongodb.arn
+#   launch_type     = "FARGATE"
+
+#   network_configuration {
+#     subnets          = [aws_subnet.private_subnet1.id]
+#     security_groups  = [aws_security_group.ecs_sg.id]
+#     assign_public_ip = false
+#   }
 # }
 
 # resource "aws_ecs_service" "backend" {
