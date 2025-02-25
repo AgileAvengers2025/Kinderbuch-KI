@@ -107,9 +107,16 @@ export default function GeneratePage() {
       }
     }
 
+    // Format content as an array of objects as expected by the backend
+    const formattedContent = storyParts.map((text, index) => ({
+      id: index + 1, // Scene number as ID
+      text: text,
+      image: "", // Default empty image field
+    }));
+
     saveMutation.mutate({
       title: selectedTitles.join(" - "), // Create a title from all selected prompts
-      content: storyParts.join("\n\n"), // Join all story parts with newlines
+      content: formattedContent, // Send properly formatted content
       userId, // Include the user id from local storage
     });
   };
