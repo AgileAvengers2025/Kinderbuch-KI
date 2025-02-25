@@ -18,7 +18,7 @@ export default function FinalStoryCard({ story, onDelete }) {
 
   const handleConfirmDelete = () => {
     if (onDelete) {
-      onDelete(story.id);
+      onDelete(story._id);
     }
     setShowConfirmDialog(false);
   };

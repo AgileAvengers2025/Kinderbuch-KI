@@ -94,7 +94,7 @@ export default function MyStories() {
               Du hast noch keine Geschichten erstellt.
             </p>
           </div>
-          <div className="font-black flex gap-4 mt-auto">
+          <div className="font-black flex gap-4">
             <Button
               variant="primary"
               onClick={handleBackToDashboard}
@@ -125,12 +125,17 @@ export default function MyStories() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stories.map((story) => (
-              <StoryCard key={story._id} story={story} />
-            ))}
+          <div className="flex-1 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {stories
+                .slice()
+                .reverse()
+                .map((story) => (
+                  <StoryCard key={story._id} story={story} />
+                ))}
+            </div>
           </div>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <Button
               variant="primary"
               onClick={handleBackToDashboard}
@@ -148,7 +153,8 @@ export default function MyStories() {
                 strokeLinejoin="round"
               >
                 <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>Zurück
+              </svg>
+              Zurück
             </Button>
           </div>
         </>

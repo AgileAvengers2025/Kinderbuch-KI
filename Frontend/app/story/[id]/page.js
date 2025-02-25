@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import LoadingSpGeneric from "../../components/LoadingSpinner";
 import Button from "../../components/Button";
 import FinalStoryCard from "../../components/FinalStoryCard";
+import handleStoryDelete from "../../api/delete/delete";
 
 export default function StoryDetail() {
   const router = useRouter();
@@ -49,22 +50,26 @@ export default function StoryDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8082/api/stories/${storyId}`,
+        `http://localhost:8082/api/stories/${story._id}`,
         {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete story");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete story");
       }
 
       // Redirect to my stories page after successful deletion
       router.push("/mystories");
     } catch (err) {
       console.error("Error deleting story:", err);
-      // You might want to show an error message to the user here
+      setError(err.message); // Add this to show error to user
     }
   };
 
