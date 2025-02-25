@@ -867,6 +867,49 @@ Authorization: Bearer <YOUR_ACCESS_TOKEN>
 
 ---
 
+### 7. **Get All Stories of a User**
+#### **`GET /api/stories/user/:userId`**
+
+##### **Description:**
+Retrieves a list of all saved stories from a User.
+
+##### **Authorization Required:**
+- The request must contain a valid JWT `accessToken` in the **Authorization header** (`Bearer <token>`).
+
+##### **Response:**
+- **Success:**
+    ```json
+    [
+        {
+            "_id": "65abc1234567890def123456",
+            "userId": "65def1234567890abc654321",
+            "title": "My First Story",
+            "content": ["Once upon a time..."]
+        },
+        {
+            "_id": "65abc6543217890def123456",
+            "userId": "65def9876543210abc654321",
+            "title": "Another Story",
+            "content": ["It was a dark and stormy night..."]
+        }
+    ]
+    ```
+
+- **Failure:**
+    ```json
+    {
+        "error": "No stories found for this user."
+    }
+    ```
+
+##### **Example:**
+```bash
+GET /api/stories/user/67b4a59d02b3272dd68b4a70
+Authorization: Bearer <YOUR_ACCESS_TOKEN>
+```
+
+---
+
 ### **Common Headers**
 - **Authorization**: 
   - For accessing protected routes, send the JWT token as a Bearer token in the Authorization header.
