@@ -41,15 +41,15 @@ jobs:
       - name: Log in to Amazon ECR
         id: login-ecr
         run: |
-          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com
+          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
       - name: Build and tag Docker image
         run: |
-          REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/backend"
+          REPO_URI="${{ secrets.ECR_REPO }}/backend"
           docker build -t $REPO_URI:latest ./Backend
           docker tag $REPO_URI:latest $REPO_URI:latest
 
       - name: Push Docker image to Amazon ECR
         run: |
-          REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/backend"
+          REPO_URI="${{ secrets.ECR_REPO }}/backend"
           docker push $REPO_URI:latest
