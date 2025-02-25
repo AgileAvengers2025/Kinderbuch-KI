@@ -13,8 +13,14 @@ export default function StoryDetail() {
   const [story, setStory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [randomGradient, setRandomGradient] = useState("--calm");
 
   useEffect(() => {
+    // Choose a random gradient when component mounts
+    const gradients = ["--peace", "--calm", "--curiosity"];
+    const randomIndex = Math.floor(Math.random() * gradients.length);
+    setRandomGradient(gradients[randomIndex]);
+
     const fetchStory = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -66,35 +72,25 @@ export default function StoryDetail() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto p-4 pb-20">
-        <div className="max-w-3xl mx-auto">
+      {/* Fixed content area - not scrollable */}
+      <div className="p-4 flex-none">
+        <div className="max-w-3xl mx-auto pt-12">
           <div
             className="p-[3px] rounded-2xl mb-4 w-full"
-            style={{ background: "var(--calm)" }}
+            style={{ background: `var(${randomGradient})` }}
           >
             <div
-              className="w-full overflow-auto rounded-2xl
+              className="w-full h-[calc(100vh-160px)] flex flex-col rounded-2xl
                 bg-[rgb(255,255,255)] 
                 shadow-[inset_0px_4px_20px_0px_rgba(0,10,120,0.15)]
                 backdrop-blur-md
                 text-base md:text-lg
-                leading-relaxed 
-                [&::-webkit-scrollbar]:w-3
-                [&::-webkit-scrollbar]:h-3
-                [&::-webkit-scrollbar-track]:bg-transparent
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-thumb]:border-2
-                [&::-webkit-scrollbar-thumb]:border-white
-                [&::-webkit-scrollbar-thumb]:bg-[#fca43c]
-                hover:[&::-webkit-scrollbar-thumb]:bg-opacity-100
-                scrollbar"
-              style={{
-                scrollbarColor: "#fca43c transparent",
-                scrollbarWidth: "thin",
-              }}
+                leading-relaxed"
             >
-              <div className="bg-yellow-50 p-6 border-b border-amber-100">
+              <div
+                className="p-6 rounded-t-2xl flex-none"
+                style={{ background: `var(${randomGradient})` }}
+              >
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                   {story.title}
                 </h1>
@@ -103,7 +99,22 @@ export default function StoryDetail() {
                   {new Date(story.createdAt).toLocaleDateString("de-DE")}
                 </p>
               </div>
-              <div className="p-6">
+              <div
+                className="p-6 flex-1 overflow-y-auto
+                  [&::-webkit-scrollbar]:w-3
+                  [&::-webkit-scrollbar]:h-3
+                  [&::-webkit-scrollbar-track]:bg-transparent
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-thumb]:border-2
+                  [&::-webkit-scrollbar-thumb]:border-white
+                  [&::-webkit-scrollbar-thumb]:bg-[#434343]
+                  hover:[&::-webkit-scrollbar-thumb]:bg-opacity-100
+                  scrollbar"
+                  style={{
+                    scrollbarColor: `var(${randomGradient}) transparent`,
+                    scrollbarWidth: "thin",
+                  }}
+              >
                 {story.content.map((section, index) => (
                   <div key={section.id} className="mb-10">
                     <h2 className="text-xl font-semibold mb-4">
@@ -132,8 +143,8 @@ export default function StoryDetail() {
               </div>
             </div>
           </div>
-          {/* Back button at the bottom */}
-          <div className="flex justify-center my-8">
+          {/* Back button always visible */}
+          <div className="flex justify-center my-4">
             <Button variant="primary" onClick={handleBack}>
               Zurück
             </Button>
