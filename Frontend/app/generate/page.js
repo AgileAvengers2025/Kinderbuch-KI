@@ -64,7 +64,7 @@ export default function GeneratePage() {
     mutationFn: saveStory,
     onSuccess: () => {
       toast.success("Geschichte wurde erfolgreich gespeichert!");
-      router.push("/stories"); // Redirect to stories list
+      router.push("/mystories"); // Redirect to stories list
     },
     onError: (error) => {
       toast.error(error.message || "Fehler beim Speichern der Geschichte!");
