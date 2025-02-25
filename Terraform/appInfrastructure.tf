@@ -173,28 +173,7 @@
 #             cpu = 256
 #             memory = 512
 #             portMappings = [{ containerPort = 8082, hostPort = 8082}]
-#             environment = [{ name = "DB_URI", value = "mongodb://mongo:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
-#         }
-#     ])
-# }
-
-# February 24th
-# resource "aws_ecs_task_definition" "backend" {
-#     family = "backend"
-#     network_mode = "awsvpc"
-#     requires_compatibilities = ["FARGATE"]
-#     memory = "512"
-#     cpu = "256"
-#     execution_role_arn = aws_iam_role.ecs_task_execution.arn
-    
-#     container_definitions = jsonencode([
-#         {
-#             name = "backend"
-#             image = "backend:latest"
-#             cpu = 256
-#             memory = 512
-#             portMappings = [{ containerPort = 8082, hostPort = 8082}]
-#             environment = [{ name = "DB_URI", value = "mongodb://demo:demoDemodemo@${aws_instance.mongodb.private_ip}:27017/kinderbuch" }] //aws_docdb_cluster.docdb.endpoint }]  
+#             environment = [{ name = "DB_URI", value = "mongodb://mellowdreams-admin:bhYIrO5Eu35xyAel@${mongodbatlas_cluster.mellowdreams-cluster.connection_strings.standard}/mellowdreams" }] //aws_docdb_cluster.docdb.endpoint }]  
 #         }
 #     ])
 # }
@@ -233,45 +212,45 @@
 #     }
 # }
 
-# February 24th
-# resource "aws_instance" "mongodb" {
-#     ami = "ami-0abcdef1234567890"
-#     instance_type = "t3.medium"
-#     key_name = "mellowdreams-key"
-#     subnet_id = aws_subnet.private_subnet1.id
-#     security_groups = [aws_security_group.ecs_sg.id]
-
-#     root_block_device {
-#       volume_size = 20 # for 20 GB MongoDB storage - NOT WITH THE FREE TIER OPTION !!!
-#     }  
-
-#     tags = {
-#       Name = "MongoDB-Instance"
+# terraform {
+#   required_providers {
+#     mongodb = {
+#       source = "mongodb/mongodbatlas"
+#       version = "~> 1.7"
 #     }
-
-#     user_data = <<-EOF
-#                 #!/bin/bash
-#                 sudo apt update -y
-#                 sudo apt install -y docker.io
-#                 sudo systemctl start docker
-#                 sudo systemctl enable docker
-
-#                 docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mellowdreams-admin -e MONGO_INITDB_ROOT_PASSWORD=tobeset -v /data/db:/data/db --restart always mongo:latest
-#                 EOF
+#   }
 # }
 
-# resource "aws_docdb_cluster" "docdb" {
-#     cluster_identifier = "mellowdreams-cluster"
-#     engine = "docdb"
-#     master_username = "demo"
-#     master_password = "demoDemodemo"
-#     vpc_security_group_ids = [aws_security_group.docdb_sg.id]
-#     db_subnet_group_name = aws_docdb_subnet_group.docdb_subnet_group.name
+# provider "mongodbatlas" {
+#   public_key = var.mongodb_atlas_public_key
+#   private_key = var.mongodb_atlas_private_key 
 # }
 
-# resource "aws_docdb_cluster_instance" "docdb_instance" {
-#     count = 2
-#     identifier = "mellowdreams-instance-${count.index}"
-#     cluster_identifier = aws_docdb_cluster.docdb.cluster_identifier
-#     instance_class = "db.t3.medium"  
+# resource "mongodbatlas_cluster" "mellowdreams" {
+#   project_id = var.mongodb_project_id
+#   name = "mellowdreams-cluster"
+#   provider_name = "AWS"
+#   region_name = "EU_CENTRAL_1"
+#   backing_provider_name = "AWS"
+#   provider_instance_size_name = "M10"    
+# }
+
+# resource "mongodbatlas_database_user" "mellowdreams-admin" {
+#   username = "mellowdreams-admin"
+#   password = "passwordtobesethere"
+#   project_id = var.mongodb_project_id
+#   roles {
+#     role_name = "readWrite"
+#     database_name = "mellowdreams-db"
+#   }
+# }
+  
+# resource "mongodbatlas_network_peering" "mellowdreams-peering" {
+#   project_id = var.mongodb_project_id
+#   provider_name = "AWS"
+#   region_name = "EU_CENTRAL_1"
+#   peer_region_name = "EU_CENTRAL_1"
+#   peer_vpc_id = aws_vpc.main.id
+#   peer_account_id = var.aws_account_id
+#   peer_vpc_cidr_block = "10.0.0.0/16"
 # }
