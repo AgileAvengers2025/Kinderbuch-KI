@@ -36,15 +36,9 @@ export default function StoryCard({ story }) {
 
         <div className="bg-[rgba(255,245,230,0.7)] px-5 py-3 flex justify-between items-center">
           <div className="flex items-center">
-            <Image
-              src="/misc/book-icon.png"
-              alt="Book"
-              width={24}
-              height={24}
-              className="mr-2"
-            />
+            
             <span className="text-sm text-gray-600">
-              {story.content.length} Seiten
+             📖 {story.content.length} Seiten
             </span>
           </div>
           <span className="text-sm font-medium" style={{ color: "#9c8cfa" }}>
