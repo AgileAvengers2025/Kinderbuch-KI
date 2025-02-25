@@ -33,6 +33,22 @@ router.get("/:id", authMiddleware, async (req, res, next) => {
     }
 });
 
+// Get all stories by a specific user
+router.get("/user/:userId", authMiddleware, async (req, res, next) => {
+    try {
+        const userStories = await Story.find({ userId: req.params.userId });
+        if (!userStories.length) {
+            logger.warn(`No stories found for user ${req.params.userId}`);
+            return res.status(404).json({ error: "No stories found for this user." });
+        }
+
+        logger.info(`Fetched ${userStories.length} stories for user ${req.params.userId}`);
+        res.status(200).json(userStories);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Create a new story
 router.post("/", authMiddleware, async (req, res, next) => {
     try {
