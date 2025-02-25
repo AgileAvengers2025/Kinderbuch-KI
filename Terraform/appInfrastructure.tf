@@ -237,12 +237,12 @@
 # resource "aws_instance" "mongodb" {
 #     ami = "ami-0abcdef1234567890"
 #     instance_type = "t3.medium"
-#     key_name = "k0g0K"
+#     key_name = "mellowdreams-key"
 #     subnet_id = aws_subnet.private_subnet1.id
 #     security_groups = [aws_security_group.ecs_sg.id]
 
 #     root_block_device {
-#       volume_size = 20 # for 20 GB MongoDB storage
+#       volume_size = 20 # for 20 GB MongoDB storage - NOT WITH THE FREE TIER OPTION !!!
 #     }  
 
 #     tags = {
@@ -256,7 +256,7 @@
 #                 sudo systemctl start docker
 #                 sudo systemctl enable docker
 
-#                 docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=demo -e MONGO_INITDB_ROOT_PASSWORD=demoDemodemo -v /data/db:/data/db --restart always mongo:latest
+#                 docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mellowdreams-admin -e MONGO_INITDB_ROOT_PASSWORD=tobeset -v /data/db:/data/db --restart always mongo:latest
 #                 EOF
 # }
 
