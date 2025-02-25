@@ -54,3 +54,15 @@
 #19.02 
 
 -Bug fixed and now login
+
+#20 / 21.02
+
+-Krank
+
+#24.02
+
+-story card/page
+
+#25.02
+
+-delete funtion and mystories page
