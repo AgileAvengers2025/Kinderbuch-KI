@@ -28,7 +28,12 @@ export default function MyStories() {
       try {
         // Using userId to fetch only stories for this specific user
         const response = await fetch(
-          `http://localhost:8082/api/stories?userId=${userId}`
+          `http://localhost:8082/api/stories/user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {
@@ -143,7 +148,7 @@ export default function MyStories() {
                 strokeLinejoin="round"
               >
                 <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
+              </svg>Zurück
             </Button>
           </div>
         </>
