@@ -5,7 +5,6 @@ import Image from "next/image";
 import StoryCard from "../components/StoryCard";
 import Button from "../components/Button";
 import LoadingSpGeneric from "../components/LoadingSpinner";
-import toast from "react-hot-toast";
 
 export default function MyStories() {
   const router = useRouter();
@@ -13,6 +12,8 @@ export default function MyStories() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showToast, setShowToast] = useState(false);
+
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082';
 
   useEffect(() => {
     const checkAuthAndLoadStories = async () => {
@@ -28,7 +29,7 @@ export default function MyStories() {
       try {
         // Using userId to fetch only stories for this specific user
         const response = await fetch(
-          `http://localhost:8082/api/stories/user/${userId}`,
+          `${API_BASE_URL}/api/stories/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
