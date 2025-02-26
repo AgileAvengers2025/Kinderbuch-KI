@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --adventure: linear-gradient(to bottom left, #ed443a 28.13%, #fca43c 84.09%);
+  --adventure: linear-gradient(to bottom left, #ed443a 10.13%, #fca43c 64.09%);
   --curiosity: linear-gradient(to bottom right, #a4eaef 17.06%, #9c8cfa 85.11%);
   --calm: linear-gradient(to top, #dcc8e9 13.82%, #f8ceee 82.83%);
 

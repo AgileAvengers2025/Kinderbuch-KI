@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import LoadingSpGeneric from "../../components/LoadingSpinner";
 import Button from "../../components/Button";
 import FinalStoryCard from "../../components/FinalStoryCard";
+import handleStoryDelete from "../../api/delete/delete";
 
 export default function StoryDetail() {
   const router = useRouter();
@@ -45,6 +46,33 @@ export default function StoryDetail() {
     router.push("/mystories");
   };
 
+  const handleDelete = async (storyId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:8082/api/stories/${story._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete story");
+      }
+
+      // Redirect to my stories page after successful deletion
+      router.push("/mystories");
+    } catch (err) {
+      console.error("Error deleting story:", err);
+      setError(err.message); // Add this to show error to user
+    }
+  };
+
   if (isLoading) {
     return <LoadingSpGeneric />;
   }
@@ -66,7 +94,7 @@ export default function StoryDetail() {
 
   return (
     <>
-      <FinalStoryCard story={story} />
+      <FinalStoryCard story={story} onDelete={handleDelete} />
       {/* Back button always visible */}
       <div className="flex justify-center my-4">
         <Button variant="primary" onClick={handleBack}>
