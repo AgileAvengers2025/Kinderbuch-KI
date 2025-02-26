@@ -17,6 +17,12 @@
   opacity: 0;
 }
 
+.slide-in-bt {
+  animation: slideIn-bt 1.5s ease-out forwards;
+  animation-delay: 0.5s;
+  opacity: 0;
+}
+
 
 @keyframes slideIn-lr {
   from {
@@ -35,6 +41,17 @@
   }
   to {
     transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn-bt {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
     opacity: 1;
   }
 }

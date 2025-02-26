@@ -48,7 +48,7 @@ export default function Dashboard() {
           width={350}
           height={200}
           priority
-           className="m-8 w-[330px] sm:w-[390px] xl:w-[500] h-auto mx-auto mb-16"
+          className="m-8 w-[330px] sm:w-[390px] xl:w-[500] h-auto mx-auto mb-16"
         />
       </div>
 
@@ -69,41 +69,23 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <div className="fixed right-0 bottom-1/2 md:bottom-1/8 block slide-in-rl">
+      <div className="fixed right-0 bottom-1/2 md:bottom-1/5 block slide-in-rl">
         <Image
           src="/kids/girl.png"
           alt="Kids illustration"
-          width={120}
+          width={100}
           height={400}
-          className="md:w-[240px] xl:w-[260px]"
+          className="md:w-[200px] xl:w-[220px]"
         />
       </div>
-      <div className="fixed left-0 bottom-0 block slide-in-lr">
-        <Image
-          src="/misc/cat.png"
-          alt="Lion illustration"
-          width={140}
-          height={400}
-          className="md:w-[240px] xl:w-[260px]"
-          priority
-        />
-      </div>
-      <div className="fixed left-0 top-1/5 md:bottom-1/3 block slide-in-lr">
+   
+      <div className="fixed -left-5 top-1/5 md:top-2/7 block slide-in-lr">
         <Image
           src="/misc/boy-mag.png"
           alt="Boy with magnifying glass"
-          width={120}
+          width={100}
           height={400}
-          className="md:w-[220px] xl:w-[240px]"
-        />
-      </div>
-      <div className="fixed left-0 top-1/5 md:bottom-1/3 block slide-in-lr">
-        <Image
-          src="/misc/girl-mag.png"
-          alt="Boy with magnifying glass"
-          width={120}
-          height={400}
-          className="md:w-[220px] xl:w-[240px]"
+          className="md:w-[200px] xl:w-[220px]"
         />
       </div>
     </div>

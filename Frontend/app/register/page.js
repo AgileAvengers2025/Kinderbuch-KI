@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import api from "../utils/api";
+import Image from "next/image";
 
 // Register function using Axios
 const registerUser = async (userData) => {
@@ -64,6 +65,16 @@ export default function Register() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="fixed left-2 md:left-10 xl:left-25 bottom-0 block slide-in-bt">
+              <Image
+                src="/misc/dog.png"
+                alt="Dog illustration"
+                width={140}
+                height={400}
+                className="md:w-[220px] xl:w-[240px]"
+                priority
+              />
+            </div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight">

@@ -68,6 +68,16 @@ export default function MyStories() {
 
   return (
     <div className="flex flex-col min-h-screen justify-between px-4 py-8 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
+      <div className="fixed right-0 bottom-0 block">
+        <Image
+          src="/misc/cat.png"
+          alt="Lion illustration"
+          width={140}
+          height={400}
+          className="md:w-[240px] xl:w-[260px]"
+          priority
+        />
+      </div>
       {/* Toast notification */}
       {error && showToast && (
         <div className="fixed top-5 right-5 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md z-50 transition-all duration-300 ease-in-out transform">
