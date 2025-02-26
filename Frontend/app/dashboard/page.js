@@ -20,11 +20,12 @@ export default function Dashboard() {
       } else if (userData) {
         try {
           const user = JSON.parse(userData);
-          if (user && user.name) {
-            const firstNameOnly = user.name.split(" ")[0];
+          // Change user.name to user.displayName since that's what's stored in localStorage
+          if (user && user.displayName) {
+            const firstNameOnly = user.displayName.split(" ")[0];
             setFirstName(firstNameOnly);
           } else {
-            // Handle case where user object doesn't have a name property
+            // Handle case where user object doesn't have a displayName property
             setFirstName("Hallo");
           }
         } catch (error) {
@@ -33,7 +34,7 @@ export default function Dashboard() {
         }
       } else {
         // If no user data but token exists
-        setFirstName("hallo");
+        setFirstName("Hallo");
       }
 
       setIsLoading(false);
@@ -73,7 +74,7 @@ export default function Dashboard() {
       </div>
 
       <div className="font-black grid grid-cols-1 gap-6 justify-items-center mb-8  ">
-        <Button variant="primary" className="min-w-74"  href="/generate">
+        <Button variant="primary" className="min-w-74" href="/generate">
           Erstelle eine Geschichte 📝
         </Button>
         <Button variant="secondary" className="min-w-74" href="/mystories">

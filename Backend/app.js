@@ -2,7 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
 const cors = require("cors");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
@@ -10,10 +10,15 @@ const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
 
 // Import middleware
-const { requestLogger, errorLogger, errorHandler, logger } = require("./middleware/logging");
+const {
+  requestLogger,
+  errorLogger,
+  errorHandler,
+  logger,
+} = require("./middleware/logging");
 
 // Import general routes
-const generalRoutes = require('./routes/index');
+const generalRoutes = require("./routes/index");
 
 // Import API routes
 const userRoutes = require("./routes/api/users");
@@ -25,14 +30,21 @@ const app = express();
 
 // Use Helmet for security
 app.use(
-    helmet({
-        contentSecurityPolicy: false,
-        crossOriginResourcePolicy: { policy: "cross-origin" },
-    })
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
 );
 
-// CORS middleware
-app.use(cors({ origin: true, credentials: true }));
+// CORS middleware - allow all origins (use only in development)
+app.use(
+  cors({
+    origin: "*", //CHANGE THIS IN THE FUTURE
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 // Express internal parser middleware
 app.use(express.json());
@@ -45,7 +57,7 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 // Use routes
-app.use('/', generalRoutes); 
+app.use("/", generalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/contents", contentRoutes);

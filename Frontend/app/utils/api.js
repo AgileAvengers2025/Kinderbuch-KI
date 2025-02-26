@@ -1,15 +1,16 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-
-const API_URL = "http://localhost:8082";
-let accessToken = null;
-
-// Create Axios instance
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
   withCredentials: true, // Ensures cookies (refreshToken) are sent
 });
+
+let accessToken = null;
 
 // Function to refresh the access token
 const refreshAccessToken = async () => {
