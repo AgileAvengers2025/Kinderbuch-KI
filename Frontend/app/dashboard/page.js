@@ -97,6 +97,15 @@ export default function Dashboard() {
           className="md:w-[220px] xl:w-[240px]"
         />
       </div>
+      <div className="fixed left-0 top-1/5 md:bottom-1/3 block slide-in-lr">
+        <Image
+          src="/misc/girl-mag.png"
+          alt="Boy with magnifying glass"
+          width={120}
+          height={400}
+          className="md:w-[220px] xl:w-[240px]"
+        />
+      </div>
     </div>
   );
 }
