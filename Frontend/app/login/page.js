@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import api from "../utils/api";
+import Image from "next/image";
 
 // Login function outside the component
 const loginUser = async (userData) => {
@@ -66,6 +67,16 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="fixed left-2 md:left-10 xl:left-25 bottom-0 block">
+                    <Image
+                      src="/misc/dog.png"
+                      alt="Dog illustration"
+                      width={140}
+                      height={400}
+                      className="md:w-[220px] xl:w-[240px]"
+                      priority
+                    />
+                  </div>
       <div className="flex px-6 lg:px-8 flex-col justify-center">
         <div className="grid">
           <h2 className="mt-10 mx-auto text-center text-4xl/9 font-bold tracking-tight max-w-[70%] sm:max-w-none ">

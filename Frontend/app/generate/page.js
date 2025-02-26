@@ -226,6 +226,7 @@ export default function GeneratePage() {
         </>
       )}
 
+
       <StoryNavigation
         currentStep={currentScene}
         onNext={currentScene === 5 ? handleSave : handleNext}
@@ -238,5 +239,6 @@ export default function GeneratePage() {
         }
       />
     </div>
+    
   );
 }

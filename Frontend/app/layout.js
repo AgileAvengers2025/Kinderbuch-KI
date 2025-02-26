@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${Roca2.className}`}>
       <body className="fixed inset-0 overflow-hidden text-[#2c2c2c]">
-        <div className="bg-[url('/background.png')] md:bg-[url('/background-w.png')] fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat md:not-fixed" />
+        <div className="bg-[url('/background.png')] md:bg-[url('/background-w.png')] fixed md:absolute inset-0 z-[-1] bg-cover bg-center bg-no-repeat" />
         <main className="h-screen w-screen overflow-hidden">
           <Providers>{children}</Providers>
         </main>

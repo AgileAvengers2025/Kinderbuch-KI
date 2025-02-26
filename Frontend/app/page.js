@@ -17,22 +17,32 @@ export default function Home() {
 
   return (
     <>
+     <div className="fixed right-0 -bottom-5 md:-bottom-1 md:right-15 block slide-in-bt">
+        <Image
+          src="/misc/girl-mag.png"
+          alt="Girl illustration"
+          width={120}
+          height={400}
+          className="md:w-[160px] xl:w-[180px]"
+        />
+      </div>
+
       <div className="fixed left-0 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in-lr">
         <Image
           src="/kids/boy-peek.png"
           alt="Kids illustration"
-          width={140}
+          width={120}
           height={400}
-          className=" md:w-[200px] xl:w-[230px] "
+          className=" md:w-[140px] xl:w-[160px] "
         />
       </div>
-      <div className="fixed -right-20 top-1/3 md:top-1/2 -translate-y-1/2 block slide-in-rl">
+      <div className="fixed -right-15 top-1/3 md:top-1/4 -translate-y-1/2 block slide-in-rl">
         <Image
           src="/misc/lion-mag.png"
           alt="Dragon illustration"
-          width={240}
+          width={220}
           height={220}
-          className=" md:w-[320px] xl:w-[410px]"
+          className=" md:w-[260px] xl:w-[280px]"
         />
       </div>
       <div className="flex flex-col min-h-screen justify-between py-8 px-2 items-center text-center">
@@ -59,9 +69,9 @@ export default function Home() {
           <Button variant="secondary" className="w-60" href="/login">
             Login
           </Button>
-          <Button variant="tertiary" className="w-60" href="/generate">
+          {/* <Button variant="tertiary" className="w-60" href="/generate">
             Ausprobieren🪄
-          </Button>
+          </Button> */}
         </div>
       </div>
     </>

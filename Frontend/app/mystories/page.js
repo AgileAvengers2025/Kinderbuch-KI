@@ -13,7 +13,8 @@ export default function MyStories() {
   const [error, setError] = useState(null);
   const [showToast, setShowToast] = useState(false);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082';
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
 
   useEffect(() => {
     const checkAuthAndLoadStories = async () => {
@@ -66,7 +67,17 @@ export default function MyStories() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen justify-between px-4 py-8 sm:px-6 lg:px-8">
+    <div className="flex flex-col min-h-screen justify-between px-4 py-8 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
+      <div className="fixed right-0 bottom-0 block">
+        <Image
+          src="/misc/cat.png"
+          alt="Lion illustration"
+          width={140}
+          height={400}
+          className="md:w-[240px] xl:w-[260px]"
+          priority
+        />
+      </div>
       {/* Toast notification */}
       {error && showToast && (
         <div className="fixed top-5 right-5 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md z-50 transition-all duration-300 ease-in-out transform">
@@ -82,7 +93,7 @@ export default function MyStories() {
       </div>
 
       {stories.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[63vh] md:h-[70vh] xl:h-[80vh] mt-0">
+        <div className="flex flex-col items-center justify-center h-[63vh] md:h-[70vh] xl:h-[80vh] mt-0 w-full">
           <div className="text-center">
             <Image
               src="/kids/nostory.png"
@@ -126,8 +137,8 @@ export default function MyStories() {
         </div>
       ) : (
         <>
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex-1 overflow-y-auto w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
               {stories
                 .slice()
                 .reverse()
