@@ -6,7 +6,7 @@ const getAuthHeader = () => {
   return "";
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchPrompts(scene) {
   const res = await fetch(`${API_BASE_URL}/api/prompts?scene=${scene}`, {

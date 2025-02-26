@@ -18,7 +18,7 @@ export const metadata = {
   title: "MellowDreams",
   description: "Moderne Technologie für aktive Erzähler",
   icons: {
-    icon: [{ url: "/m.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/M.svg", type: "image/svg+xml" }],
   },
 };
 
