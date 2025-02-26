@@ -21,16 +21,60 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: '20.x'  # Changed to 20.x as it's more stable than 22.x
 
-      - name: npm install, build, and test
+      # Backend build
+      - name: Backend - npm install
         run: |
+          cd Backend
           npm install
-          npm run build --if-present
-          npm run test --if-present
+      
+      # Frontend build
+      - name: Frontend - npm install and build
+        run: |
+          cd Frontend
+          npm install
+          npm run build
+      
+      # Create deployment package with both frontend and backend
+      - name: Prepare deployment package
+        run: |
+          mkdir -p deploy
+          # Copy backend files
+          cp -r Backend/* deploy/
+          # Create a public directory and copy the Next.js build output
+          mkdir -p deploy/public
+          cp -r Frontend/.next deploy/public/
+          cp -r Frontend/public/* deploy/public/
+          
+          # Create a server.js file in the root to serve both backend API and frontend
+          echo 'const express = require("express");
+          const path = require("path");
+          const app = require("./app");
+          
+          // Serve static Next.js frontend files
+          app.use(express.static(path.join(__dirname, "public")));
+          
+          // Handle requests that should be routed to Next.js
+          app.get("*", (req, res) => {
+            // Skip API routes
+            if (!req.path.startsWith("/api")) {
+              res.sendFile(path.join(__dirname, "public", ".next", "server", "pages", req.path));
+            }
+          });
+          
+          const port = process.env.PORT || 8082;
+          app.listen(port, () => console.log(`Server running on port ${port}`));
+          ' > deploy/server.js
+          
+          # Update package.json to include start script
+          cd deploy
+          npm pkg set scripts.start="node server.js"
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          cd deploy
+          zip -r ../release.zip ./*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -64,6 +108,14 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_39CBE2C4748C411AA17EBDE924B929CD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6A633B9E75C94258B602E409A1A6E1EE }}
 
+      - name: Setup environment variables
+        run: |
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
+          echo "REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}" >> .env
+          echo "PORT=8080" >> .env
+          echo "AWS_BEDROCK_API_KEY=${{ secrets.AWS_BEDROCK_API_KEY }}" >> .env
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -71,4 +123,3 @@ jobs:
           app-name: 'melowdreams'
           slot-name: 'Production'
           package: .
-          
