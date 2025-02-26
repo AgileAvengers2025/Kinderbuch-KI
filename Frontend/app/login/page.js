@@ -66,7 +66,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="flex  flex-col justify-center">
+      <div className="flex px-6 lg:px-8 flex-col justify-center">
         <div className="grid">
           <h2 className="mt-10 mx-auto text-center text-4xl/9 font-bold tracking-tight max-w-[70%] sm:max-w-none ">
             In Ihrem Konto anmelden.

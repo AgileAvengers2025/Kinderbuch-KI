@@ -4,7 +4,6 @@ import { useRouter, useParams } from "next/navigation";
 import LoadingSpGeneric from "../../components/LoadingSpinner";
 import Button from "../../components/Button";
 import FinalStoryCard from "../../components/FinalStoryCard";
-import handleStoryDelete from "../../api/delete/delete";
 
 export default function StoryDetail() {
   const router = useRouter();
@@ -14,6 +13,8 @@ export default function StoryDetail() {
   const [story, setStory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082';
+
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -50,7 +51,7 @@ export default function StoryDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8082/api/stories/${story._id}`,
+        `${API_BASE_URL}/api/stories/${story._id}`,
         {
           method: "DELETE",
           headers: {

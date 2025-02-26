@@ -6,8 +6,10 @@ const getAuthHeader = () => {
   return "";
 };
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+
 export async function fetchPrompts(scene) {
-  const res = await fetch(`http://localhost:8082/api/prompts?scene=${scene}`, {
+  const res = await fetch(`${API_BASE_URL}/api/prompts?scene=${scene}`, {
     headers: {
       Authorization: getAuthHeader(),
     },
@@ -17,7 +19,7 @@ export async function fetchPrompts(scene) {
 }
 
 export async function generateStory({ title, beforeOutput }) {
-  const res = await fetch("http://localhost:8082/api/contents/generate", {
+  const res = await fetch(`${API_BASE_URL}/api/contents/generate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +32,7 @@ export async function generateStory({ title, beforeOutput }) {
 }
 
 export async function saveStory({ userId, title, content }) {
-  const res = await fetch("http://localhost:8082/api/stories", {
+  const res = await fetch(`${API_BASE_URL}/api/stories`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
