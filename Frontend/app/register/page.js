@@ -75,7 +75,7 @@ export default function Register() {
                 priority
               />
             </div>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex min-h-full flex-1 flex-col justify-top md:justify-center px-6 pt-2 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-4xl font-black leading-9 tracking-tight">
             Erstelle ein Konto
@@ -124,7 +124,7 @@ export default function Register() {
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-10 text-center text-sm md:max-w-sm text-gray-500">
             Sie haben schon ein Konto?{" "}
             <a
               href="/login"

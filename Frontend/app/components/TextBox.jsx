@@ -15,11 +15,11 @@ export default function TextBox({ children, variant, className = "" }) {
 
   return (
     <div
-      className={`p-[3px] ${variantStyles[variant]} ${className} rounded-2xl mb-4 my-16 w-full max-w-xl lg:max-w-3xl xl:max-w-4xl mx-auto`}
+      className={`p-[3px] ${variantStyles[variant]} ${className} rounded-2xl mb-4 mt-4 xl:mt-12 w-full max-w-xl lg:max-w-3xl xl:max-w-4xl mx-auto`}
       style={{ background: `var(--${variant})` }}
     >
       <div
-        className={`w-full h-84 overflow-auto rounded-2xl p-4 md:p-6 lg:p-8
+        className={`w-full h-64 md:h-84 overflow-auto rounded-2xl p-4 md:p-6 lg:p-8
           bg-[rgba(255,255,255,0.92)] 
           shadow-[inset_0px_4px_20px_0px_rgba(0,10,120,0.15)]
           backdrop-blur-md
