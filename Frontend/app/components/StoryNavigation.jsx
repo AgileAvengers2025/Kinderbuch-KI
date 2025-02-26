@@ -6,7 +6,7 @@ export default function StoryNavigation({
   onNext,
   onPrevious,
   totalSteps = 5,
-  disabled
+  disabled,
 }) {
   return (
     <div className="font-black flex justify-between w-full max-w-3xs ">
@@ -14,6 +14,7 @@ export default function StoryNavigation({
         variant="primary"
         onClick={onPrevious}
         className="flex items-center justify-center"
+        // Previous button doesn't need to be disabled in the same way
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

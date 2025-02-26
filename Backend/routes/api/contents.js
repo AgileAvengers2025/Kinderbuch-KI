@@ -111,7 +111,7 @@ router.post("/generate", authMiddleware, async (req, res, next) => {
             body: JSON.stringify({
                 inputText: finalPrompt,
                 textGenerationConfig: {
-                    maxTokenCount: 500,
+                    maxTokenCount: 550,
                     temperature: 0.9,
                     topP: 0.9,
                 }

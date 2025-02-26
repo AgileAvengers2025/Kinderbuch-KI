@@ -22,6 +22,7 @@ export default function GeneratePage() {
   const [storyParts, setStoryParts] = useState([]);
   const randomSeedRef = useRef(Date.now()); // Create a stable random seed
   const [isLoadingPrompts, setIsLoadingPrompts] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // Add this to track save state
 
   const mutation = useMutation({
     mutationFn: generateStory,
@@ -33,9 +34,6 @@ export default function GeneratePage() {
         return;
       }
 
-      // Only update state if we have a valid response
-      console.log(`Processing response for scene ${currentScene}`);
-
       setStoryParts((prev) => {
         // Only add the new story part if it's for the current scene
         const newStoryParts = [...prev];
@@ -43,16 +41,14 @@ export default function GeneratePage() {
         return newStoryParts;
       });
 
-      // Only advance scene after user interaction
-      if (!mutation.isPending) {
-        setCurrentScene((prev) => {
-          if (prev === 5) {
-            toast.success("Geschichte erfolgreich generiert!");
-            return prev;
-          }
-          return prev + 1;
-        });
-      }
+      // Remove the conditional and always advance scene
+      setCurrentScene((prev) => {
+        if (prev === 5) {
+          toast.success("Geschichte erfolgreich generiert!");
+          return prev;
+        }
+        return prev + 1;
+      });
     },
     onError: (error) => {
       console.error(`Error generating scene ${currentScene}:`, error);
@@ -64,10 +60,12 @@ export default function GeneratePage() {
     mutationFn: saveStory,
     onSuccess: () => {
       toast.success("Geschichte wurde erfolgreich gespeichert!");
+      setIsSaving(false); // Reset saving flag
       router.push("/mystories"); // Redirect to stories list
     },
     onError: (error) => {
       toast.error(error.message || "Fehler beim Speichern der Geschichte!");
+      setIsSaving(false); // Reset saving flag even on error
     },
   });
 
@@ -97,6 +95,14 @@ export default function GeneratePage() {
   };
 
   const handleSave = () => {
+    // Prevent duplicate saves by checking isSaving flag
+    if (isSaving) {
+      console.log("Save already in progress");
+      return;
+    }
+
+    setIsSaving(true); // Set saving flag
+
     const userData = localStorage.getItem("user");
     let userId = null;
     if (userData) {
@@ -226,7 +232,6 @@ export default function GeneratePage() {
         </>
       )}
 
-
       <StoryNavigation
         currentStep={currentScene}
         onNext={currentScene === 5 ? handleSave : handleNext}
@@ -234,11 +239,12 @@ export default function GeneratePage() {
         totalSteps={5}
         disabled={
           mutation.isPending ||
+          saveMutation.isPending ||
+          isSaving || // Add this flag
           isLoadingPrompts ||
           (currentScene < 5 && !selectedTitles[currentScene - 1])
         }
       />
     </div>
-    
   );
 }

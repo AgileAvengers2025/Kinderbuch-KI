@@ -67,14 +67,14 @@ export default function MyStories() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen justify-between px-4 py-8 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
-      <div className="fixed right-0 bottom-0 block">
+    <div className="flex flex-col min-h-screen max-h-screen justify-between px-4 py-8 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="fixed right-0 bottom-0 block z-0">
         <Image
           src="/misc/cat.png"
           alt="Lion illustration"
           width={140}
           height={400}
-          className="md:w-[240px] xl:w-[260px]"
+          className="md:w-[150px] xl:w-[170px]"
           priority
         />
       </div>
@@ -88,12 +88,12 @@ export default function MyStories() {
         </div>
       )}
 
-      <div className="mb-6 flex justify-center text-center">
-        <h1 className="text-4xl font-black">Meine Geschichten</h1>
+      <div className="mb-4 flex justify-center text-center">
+        <h1 className="text-4xl pt-4 font-black">Meine Geschichten</h1>
       </div>
 
       {stories.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[63vh] md:h-[70vh] xl:h-[80vh] mt-0 w-full">
+        <div className="flex flex-col items-center justify-center flex-grow w-full mb-16">
           <div className="text-center">
             <Image
               src="/kids/nostory.png"
@@ -102,7 +102,7 @@ export default function MyStories() {
               height={200}
               className="mb-6 mx-auto xl:w-sm"
             />
-            <p className="text-3xl  mb-8">
+            <p className="text-3xl mb-8">
               Du hast noch keine Geschichten erstellt.
             </p>
           </div>
@@ -137,8 +137,17 @@ export default function MyStories() {
         </div>
       ) : (
         <>
-          <div className="flex-1 overflow-y-auto w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <div
+            className="flex-1 overflow-y-auto overflow-hidden w-full [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar]:h-1.5
+                  [&::-webkit-scrollbar-track]:bg-transparent
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-thumb]:border-0.5
+                  [&::-webkit-scrollbar-thumb]:border-white
+                  [&::-webkit-scrollbar-thumb]:bg-[#4343433c]
+                  hover:[&::-webkit-scrollbar-thumb]:bg-[#43434359]"
+          >
+            <div className="grid grid-cols-1 gap-6 w-full mx-auto max-w-md md:max-w-none md:grid-cols-2 lg:grid-cols-3">
               {stories
                 .slice()
                 .reverse()
@@ -147,7 +156,7 @@ export default function MyStories() {
                 ))}
             </div>
           </div>
-          <div className="mt-4 flex justify-center">
+          <div className="py-4 flex justify-center sticky bottom-0 z-10">
             <Button
               variant="primary"
               onClick={handleBackToDashboard}

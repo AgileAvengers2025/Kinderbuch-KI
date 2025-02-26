@@ -64,10 +64,7 @@ export default function Button({
       <Link href={href}>
         <button
           className={classes}
-          onClick={(e) => {
-            handleClick(e);
-            if (onClick) onClick(e);
-          }}
+          onClick={handleClick} // Fix: only call handleClick once
           disabled={disabled}
           {...rest}
         >
@@ -79,10 +76,7 @@ export default function Button({
   return (
     <button
       className={classes}
-      onClick={(e) => {
-        handleClick(e);
-        if (onClick) onClick(e);
-      }}
+      onClick={handleClick} // Fix: only call handleClick once
       disabled={disabled}
       {...rest}
     >
