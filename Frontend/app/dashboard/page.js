@@ -18,10 +18,24 @@ export default function Dashboard() {
       if (!token) {
         router.push("/");
       } else if (userData) {
-        const user = JSON.parse(userData);
-        const firstNameOnly = user.name.split(" ")[0];
-        setFirstName(firstNameOnly);
+        try {
+          const user = JSON.parse(userData);
+          if (user && user.name) {
+            const firstNameOnly = user.name.split(" ")[0];
+            setFirstName(firstNameOnly);
+          } else {
+            // Handle case where user object doesn't have a name property
+            setFirstName("Hallo");
+          }
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          setFirstName("Hallo");
+        }
+      } else {
+        // If no user data but token exists
+        setFirstName("hallo");
       }
+
       setIsLoading(false);
     };
 
@@ -53,15 +67,16 @@ export default function Dashboard() {
       </div>
 
       <div className="text-3xl font-black max-w-[20rem] xl:max-w-none mx-auto mb-12">
-        {firstName},<br />
-        Willkommen zu deiner zauberhaften Bibliothek!
+        {firstName && firstName.charAt(0).toUpperCase() + firstName.slice(1)},
+        <br />
+        willkommen zu deiner zauberhaften Bibliothek!
       </div>
 
-      <div className="font-black grid grid-cols-1 gap-6 justify-items-center mb-8">
-        <Button variant="primary" href="/generate">
+      <div className="font-black grid grid-cols-1 gap-6 justify-items-center mb-8  ">
+        <Button variant="primary" className="min-w-74"  href="/generate">
           Erstelle eine Geschichte 📝
         </Button>
-        <Button variant="secondary" href="/mystories">
+        <Button variant="secondary" className="min-w-74" href="/mystories">
           Meine Geschichten 📚
         </Button>
         <Button variant="tertiary" onClick={handleLogout}>
@@ -69,23 +84,23 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <div className="fixed right-0 bottom-1/2 md:bottom-1/5 block slide-in-rl">
+      <div className="fixed right-0 bottom-3/5 md:bottom-1/5 block slide-in-rl">
         <Image
           src="/kids/girl.png"
           alt="Kids illustration"
           width={100}
           height={400}
-          className="md:w-[200px] xl:w-[220px]"
+          className="md:w-[160px] xl:w-[180px]"
         />
       </div>
-   
-      <div className="fixed -left-5 top-1/5 md:top-2/7 block slide-in-lr">
+
+      <div className="fixed -left-5 top-1/5 md:top-2/7 xl:top-2/5 block slide-in-lr">
         <Image
           src="/misc/boy-mag.png"
           alt="Boy with magnifying glass"
           width={100}
           height={400}
-          className="md:w-[200px] xl:w-[220px]"
+          className="md:w-[160px] xl:w-[180px]"
         />
       </div>
     </div>
