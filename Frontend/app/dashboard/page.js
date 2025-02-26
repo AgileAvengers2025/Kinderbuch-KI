@@ -69,23 +69,32 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <div className="fixed right-0 bottom-1/3 md:bottom-1/8 block slide-in-rl">
+      <div className="fixed right-0 bottom-1/2 md:bottom-1/8 block slide-in-rl">
         <Image
           src="/kids/girl.png"
           alt="Kids illustration"
-          width={140}
+          width={120}
           height={400}
           className="md:w-[240px] xl:w-[260px]"
         />
       </div>
       <div className="fixed left-0 bottom-0 block slide-in-lr">
         <Image
-          src="/misc/lion.png"
+          src="/misc/cat.png"
           alt="Lion illustration"
           width={140}
           height={400}
           className="md:w-[240px] xl:w-[260px]"
           priority
+        />
+      </div>
+      <div className="fixed left-0 top-1/5 md:bottom-1/3 block slide-in-lr">
+        <Image
+          src="/misc/boy-mag.png"
+          alt="Boy with magnifying glass"
+          width={120}
+          height={400}
+          className="md:w-[220px] xl:w-[240px]"
         />
       </div>
     </div>
