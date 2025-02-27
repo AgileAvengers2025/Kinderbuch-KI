@@ -13,7 +13,7 @@ export default function StoryDetail() {
   const [story, setStory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function StoryDetail() {
       }
       try {
         const response = await fetch(
-          `http://localhost:8082/api/stories/${id}`,
+          `${API_BASE_URL}/api/stories/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
