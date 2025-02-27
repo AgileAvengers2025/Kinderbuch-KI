@@ -56,7 +56,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-screen justify-between items-center text-center">
       {/* Rest of your JSX remains the same */}
-      <div className="w-full px-4 py-8 sm:px-0">
+      <div className="w-full px-4 py-6 sm:px-0">
         <Image
           src="/mellow.svg"
           alt="Header illustration"

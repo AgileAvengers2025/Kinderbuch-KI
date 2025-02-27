@@ -66,7 +66,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-top md:justify-center min-h-screen">
       <div className="fixed left-2 md:left-10 xl:left-25 bottom-0 block">
                     <Image
                       src="/misc/dog.png"

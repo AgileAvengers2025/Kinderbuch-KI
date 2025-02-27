@@ -175,7 +175,7 @@ export default function GeneratePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen justify-between py-8 px-2 items-center text-center">
+    <div className="flex flex-col min-h-screen justify-between pb-4 px-2 items-center text-center">
       {storyParts.length > 0 ? (
         <TextBox
           variant={
@@ -198,7 +198,7 @@ export default function GeneratePage() {
           ))}
         </TextBox>
       ) : (
-        <div className="mx-auto text-center my-8  ">
+        <div className="mx-auto text-center ">
           <h2 className="mt-10  font-black text-5xl mb-8 ">Erstellen</h2>
           <h1 className="text-3xl max-w-75 font-black mb-4">
             Wähle eine Option aus, um fortzufahren.
@@ -209,7 +209,7 @@ export default function GeneratePage() {
       {currentScene < 5 && (
         <>
           <h1 className="text-2xl font-bold mb-4">Szene {currentScene}</h1>
-          <div className="flex flex-col gap-6 mb-4">
+          <div className="flex flex-col gap-4 mb-4">
             {isLoadingPrompts ? (
               <LoadingSpGeneric />
             ) : (

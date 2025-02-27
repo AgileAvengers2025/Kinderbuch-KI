@@ -20,12 +20,14 @@ export const metadata = {
   icons: {
     icon: [{ url: "/M.svg", type: "image/svg+xml" }],
   },
+  // Add basic viewport settings
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${Roca2.className}`}>
-      <body className="fixed inset-0 overflow-hidden text-[#2c2c2c]">
+    <html lang="en" className={`${Roca2.className} h-full`}>
+      <body className="fixed inset-0 overflow-hidden text-[#2c2c2c] h-full">
         <div className="bg-[url('/background.png')] md:bg-[url('/background-w.png')] fixed md:absolute inset-0 z-[-1] bg-cover bg-center bg-no-repeat" />
         <main className="h-screen w-screen overflow-hidden">
           <Providers>{children}</Providers>

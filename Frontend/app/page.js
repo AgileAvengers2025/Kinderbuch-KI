@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <>
-     <div className="fixed right-0 -bottom-5 md:-bottom-1 md:right-15 block slide-in-bt">
+     <div className="fixed -right-9 -bottom-5 md:-bottom-1 md:right-15 block slide-in-bt">
         <Image
           src="/misc/girl-mag.png"
           alt="Girl illustration"
@@ -31,7 +31,7 @@ export default function Home() {
         <Image
           src="/kids/boy-peek.png"
           alt="Kids illustration"
-          width={120}
+          width={100}
           height={400}
           className=" md:w-[140px] xl:w-[160px] "
         />
@@ -40,7 +40,7 @@ export default function Home() {
         <Image
           src="/misc/lion-mag.png"
           alt="Dragon illustration"
-          width={220}
+          width={180}
           height={220}
           className=" md:w-[260px] xl:w-[280px]"
         />
